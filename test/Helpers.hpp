@@ -17,6 +17,10 @@ struct Helpers {
         std::array<uint8_t, 4> const& bytes
     );
 
+    canbus::Message makeAbort(
+        uint8_t node_id, uint16_t object_id, uint8_t object_sub_id, uint32_t code
+    );
+
     canbus::Message makeReadReply(
         uint8_t node_id, uint16_t object_id, uint8_t object_sub_id,
         std::array<uint8_t, 4> const& bytes

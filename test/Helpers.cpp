@@ -66,3 +66,21 @@ canbus::Message Helpers::makeWriteReply(
     msg.data[3] = object_sub_id;
     return msg;
 }
+
+canbus::Message Helpers::makeAbort(
+    uint8_t node_id, uint16_t object_id, uint8_t object_sub_id, uint32_t code
+) {
+    auto msg = canbus::Message::Zeroed();
+    msg.can_id = 0x580 + node_id;
+    msg.size = 8;
+    msg.data[0] = 0x80;
+    msg.data[1] = (object_id & 0xFF00) >> 8;
+    msg.data[2] = (object_id & 0x00FF) >> 0;
+    msg.data[3] = object_sub_id;
+    msg.data[4] = (code & 0xFF000000) >> 24;
+    msg.data[5] = (code & 0x00FF0000) >> 16;
+    msg.data[6] = (code & 0x0000FF00) >> 8;
+    msg.data[7] = (code & 0x000000FF) >> 0;
+    return msg;
+}
+

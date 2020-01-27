@@ -56,7 +56,9 @@ void Device::process(canbus::Message const& message) {
     uint8_t object_sub_id = message.data[3];
 
     if (command == protocol::COMMAND_ABORT) {
-        processAbortMessage(message);
+        processAbortMessage(message, object_id, object_sub_id);
+        // We reach here if the abort was not for the object we're manipulating
+        return;
     }
 
     if (processWaitFinished(command, object_id, object_sub_id)) {
@@ -84,7 +86,15 @@ base::Time Device::getElapsedWaitTime() const {
     }
 }
 
-void Device::processAbortMessage(canbus::Message const& message) {
+void Device::processAbortMessage(canbus::Message const& message,
+                                 uint16_t object_id, uint8_t object_sub_id) {
+    if (m_wait_object_id != object_id ||
+        m_wait_object_sub_id != object_sub_id) {
+        return;
+    }
+
+    m_state = STATE_NORMAL;
+
     uint32_t code = protocol::fromBigEndian<uint32_t>(message.data + 4);
     switch (code) {
         case protocol::ABORT_COMMAND_INVALID:
@@ -97,6 +107,8 @@ void Device::processAbortMessage(canbus::Message const& message) {
             throw Abort("device reports: attempte to access a non-existent object");
         case protocol::ABORT_INVALID_VALUE:
             throw Abort("device reports: invalid value in write");
+        default:
+            throw Abort("abort received, but the code is undefined");
     }
 }
 

@@ -89,12 +89,28 @@ TEST_F(DeviceTest, it_resets_wait_time_after_receiving_the_expected_write_reply)
 }
 
 TEST_F(DeviceTest, it_processes_an_abort_message_related_to_the_pending_write) {
+    device.queryWrite<uint16_t>(0x4284, 0x12, 0x102);
+    ASSERT_THROW((device.process(makeAbort(NODE_ID, 0x4284, 0x12, 0x05040001))), Abort);
 }
 
 TEST_F(DeviceTest, it_resets_the_wait_write_state_once_the_abort_is_received) {
+    device.queryWrite<uint16_t>(0x4284, 0x12, 0x102);
+    ASSERT_THROW(device.process(makeAbort(NODE_ID, 0x4284, 0x12, 0x05040001)), Abort);
+    ASSERT_TRUE(device.getElapsedWaitTime().isNull());
 }
 
-TEST_F(DeviceTest, it_ignores_an_abort_message_not_related_to_the_pending_write) {
+TEST_F(DeviceTest, it_ignores_an_abort_message_whose_object_id_differs) {
+    device.queryWrite<uint16_t>(0x4284, 0x12, 0x102);
+    device.process(makeAbort(NODE_ID, 0x4285, 0x12, 0x05040001));
+    usleep(100);
+    ASSERT_FALSE(device.getElapsedWaitTime().isNull());
+}
+
+TEST_F(DeviceTest, it_ignores_an_abort_message_whose_object_sub_id_differs) {
+    device.queryWrite<uint16_t>(0x4284, 0x12, 0x102);
+    device.process(makeAbort(NODE_ID, 0x4284, 0x13, 0x05040001));
+    usleep(100);
+    ASSERT_FALSE(device.getElapsedWaitTime().isNull());
 }
 
 TEST_F(DeviceTest, it_queries_a_read) {
@@ -154,6 +170,19 @@ TEST_F(DeviceTest, it_resets_wait_time_after_receiving_the_expected_read_reply) 
 TEST_F(MockDeviceTest, it_calls_processRead_when_receiving_a_read_reply) {
     EXPECT_CALL(device, processRead(0x4284, 0x12, _));
     device.process(makeReadReply(NODE_ID, 0x4284, 0x12, { 0x0, 0x3, 0x2, 0x1 }));
+}
+
+TEST_F(DeviceTest, it_resets_wait_time_after_receiving_an_abort) {
+    device.queryRead(0x4284, 0x12);
+    ASSERT_THROW(device.process(makeAbort(NODE_ID, 0x4284, 0x12, 0x06010001)), Abort);
+    ASSERT_TRUE(device.getElapsedWaitTime().isNull());
+}
+
+TEST_F(DeviceTest, it_ignores_aborts_not_related_to_the_pending_read) {
+    device.queryRead(0x4284, 0x12);
+    device.process(makeAbort(NODE_ID, 0x4285, 0x12, 0x06010001));
+    usleep(100);
+    ASSERT_FALSE(device.getElapsedWaitTime().isNull());
 }
 
 TEST_F(DeviceTest, it_queries_the_serial_number_object) {

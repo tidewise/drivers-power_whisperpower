@@ -37,7 +37,8 @@ namespace power_whisperpower {
 
         void setWaitState(States state, uint16_t object_id, uint8_t object_sub_id);
 
-        static void processAbortMessage(canbus::Message const& message);
+        void processAbortMessage(canbus::Message const& message,
+                                 uint16_t object_id, uint8_t object_sub_id);
 
         static const int OID_SERIAL_NUMBER = 0x1018;
         static const int OID_TRANSMIT_PERIOD = 0x9100;
