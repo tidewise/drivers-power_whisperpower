@@ -1,7 +1,10 @@
 rock_library(power_whisperpower
-    SOURCES Dummy.cpp
-    HEADERS Dummy.hpp)
+    SOURCES Device.cpp Protocol.cpp DCPowerCube.cpp DCPowerCubeState.cpp
+    HEADERS Device.hpp Protocol.hpp DCPowerCube.hpp DCPowerCubeState.hpp
+    DEPS_PKGCONFIG base-types canbus)
 
-rock_executable(power_whisperpower_bin Main.cpp
-    DEPS power_whisperpower)
-
+rock_executable(power_whisperpower_ctl
+    SOURCES Main.cpp
+    HEADERS
+    DEPS power_whisperpower
+    DEPS_PKGCONFIG canbus)
