@@ -1,53 +1,53 @@
-#include <power_whisperpower/DCPowerCubeState.hpp>
+#include <power_whisperpower/DCPowerCubeStatus.hpp>
 
 using namespace power_whisperpower;
 
 using std::endl;
 
-std::string to_string(DCPowerCubeState::ChargingState state) {
+std::string to_string(DCPowerCubeStatus::ChargingStatus state) {
     switch(state) {
-        case DCPowerCubeState::CHARGING_UNKNOWN:
+        case DCPowerCubeStatus::CHARGING_UNKNOWN:
             return "UNKNOWN";
-        case DCPowerCubeState::CHARGING_BULK:
+        case DCPowerCubeStatus::CHARGING_BULK:
             return "BULK";
-        case DCPowerCubeState::CHARGING_20_40:
+        case DCPowerCubeStatus::CHARGING_20_40:
             return "20_40";
-        case DCPowerCubeState::CHARGING_ABSORPTION:
+        case DCPowerCubeStatus::CHARGING_ABSORPTION:
             return "ABSORPTION";
-        case DCPowerCubeState::CHARGING_60_80:
+        case DCPowerCubeStatus::CHARGING_60_80:
             return "60_80";
-        case DCPowerCubeState::CHARGING_FLOAT:
+        case DCPowerCubeStatus::CHARGING_FLOAT:
             return "FLOAT";
-        case DCPowerCubeState::CHARGING_MAINTENANCE:
+        case DCPowerCubeStatus::CHARGING_MAINTENANCE:
             return "MAINTENANCE";
     }
     throw std::runtime_error("invalid charging state received");
 }
 
-std::string to_string(DCPowerCubeState::BatteryType battery) {
+std::string to_string(DCPowerCubeStatus::BatteryType battery) {
     switch(battery) {
-        case DCPowerCubeState::BATTERY_UNKNOWN:
+        case DCPowerCubeStatus::BATTERY_UNKNOWN:
             return "UNKNOWN";
-        case DCPowerCubeState::BATTERY_LEAD_ACID:
+        case DCPowerCubeStatus::BATTERY_LEAD_ACID:
             return "LEAD_ACID";
-        case DCPowerCubeState::BATTERY_AGM_GEL:
+        case DCPowerCubeStatus::BATTERY_AGM_GEL:
             return "AGM_GEL";
-        case DCPowerCubeState::BATTERY_TRACTION:
+        case DCPowerCubeStatus::BATTERY_TRACTION:
             return "TRACTION";
-        case DCPowerCubeState::BATTERY_LI_ION:
+        case DCPowerCubeStatus::BATTERY_LI_ION:
             return "LI_ION";
-        case DCPowerCubeState::BATTERY_USER:
+        case DCPowerCubeStatus::BATTERY_USER:
             return "USER";
     }
     throw std::runtime_error("invalid charging state received");
 }
 
 #define FLAG_OUT(field, flag) \
-    if (field & DCPowerCubeState::flag) { \
+    if (field & DCPowerCubeStatus::flag) { \
         io << "  " #flag "\n"; \
     }
 
-std::ostream& power_whisperpower::operator << (std::ostream& io, DCPowerCubeState const& state) {
+std::ostream& power_whisperpower::operator << (std::ostream& io, DCPowerCubeStatus const& state) {
     io << "Time: " << state.time << "\n"
        << "State flags:\n";
 
@@ -91,9 +91,10 @@ std::ostream& power_whisperpower::operator << (std::ostream& io, DCPowerCubeStat
        << "  DC Output: " << state.load_percentage_dc_output * 100 << "%\n";
 
     io << "Battery Type: " << to_string(state.battery_type) << "\n";
-    io << "Charging State: " << to_string(state.charging_state) << "\n";
+    io << "Charging State: " << to_string(state.charging_status) << "\n";
 
-    io << "DC Output: " << state.dc_output_voltage << "V " << state.dc_output_current << "A\n";
+    io << "DC Output: " << state.dc_output_voltage << "V "
+        << state.dc_output_current << "A\n";
     io << "DC Current Limit: " << state.dc_output_current_limit << "A\n";
 
     io << "Temperatures:\n"

@@ -83,7 +83,7 @@ int main(int argc, char** argv)
             auto msg = can_device->read();
             wp_device.process(msg);
         }
-        std::cout << wp_device.getState() << std::endl;
+        std::cout << wp_device.getStatus() << std::endl;
     }
 
     return 0;

@@ -2,13 +2,13 @@
 #define POWER_WHISPERPOWER_DCPOWERCUBE_HPP
 
 #include <power_whisperpower/Device.hpp>
-#include <power_whisperpower/DCPowerCubeState.hpp>
+#include <power_whisperpower/DCPowerCubeStatus.hpp>
 
 namespace power_whisperpower {
     class DCPowerCube : public Device {
-        typedef DCPowerCubeState State;
+        typedef DCPowerCubeStatus Status;
 
-        State m_state;
+        Status m_status;
         bool m_has_full_update = false;
 
     protected:
@@ -18,7 +18,7 @@ namespace power_whisperpower {
 
     public:
         DCPowerCube(uint8_t device_id);
-        State getState() const;
+        Status getStatus() const;
 
         bool hasFullUpdate() const;
         void resetFullUpdate();
