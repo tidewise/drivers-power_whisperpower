@@ -52,6 +52,8 @@ namespace power_whisperpower {
         explicit Device(protocol::NodeIDGroups group, uint8_t device_id = 0);
         virtual ~Device();
 
+        bool isWaiting() const;
+
         /** How long we have been waiting for a specific reply from the device
          */
         base::Time getElapsedWaitTime() const;
