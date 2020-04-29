@@ -73,18 +73,20 @@ std::ostream& power_whisperpower::operator << (std::ostream& io, DCPowerCubeStat
     io << "\n";
 
     io << "Grid: " << state.grid_voltage << "V " << state.grid_current << "A\n";
-    io << "Generator: " << state.generator_frequency << "Hz " << state.generator_rpm << "rpm\n";
+
+    int rpm = round(state.generator_rotational_velocity / 60 / 2 / M_PI);
+    io << "Generator: " << state.generator_frequency << "Hz " << rpm << "rpm\n";
     io << "Generator Phase Currents: "
         << state.generator_phase_currents[0] << "A "
         << state.generator_phase_currents[1] << "A "
         << state.generator_phase_currents[2] << "A\n";
 
     io << "Current Limits:\n"
-       << "  Grid: " << state.generator_current_limit << "A\n" 
+       << "  Grid: " << state.generator_current_limit << "A\n"
        << "  Generator: " << state.generator_current_limit << "A\n";
 
     io << "Load Percentages:\n"
-       << "  Grid: " << state.load_percentage_grid * 100 << "%\n" 
+       << "  Grid: " << state.load_percentage_grid * 100 << "%\n"
        << "  Generator: " << state.load_percentage_generator * 100 << "%\n"
        << "  DC Output: " << state.load_percentage_dc_output * 100 << "%\n";
 

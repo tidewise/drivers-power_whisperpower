@@ -21,10 +21,12 @@ void DCPowerCube::processRead(
             m_state.grid_current = value[2];
             m_state.grid_current_limit = value[3];
             break;
-        case 0x2112:
+        case 0x2112: {
             m_state.generator_frequency = protocol::fromBigEndian<uint16_t>(value);
-            m_state.generator_rpm = protocol::fromBigEndian<uint16_t>(value + 2);
+            float rpm = protocol::fromBigEndian<uint16_t>(value + 2);
+            m_state.generator_rotational_velocity = rpm * 60 * 2 * M_PI;
             break;
+        }
         case 0x2113:
             m_state.generator_phase_currents[0] = static_cast<float>(value[0]) / 10;
             m_state.generator_phase_currents[1] = static_cast<float>(value[1]) / 10;

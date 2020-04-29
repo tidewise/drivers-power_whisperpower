@@ -41,7 +41,7 @@ namespace power_whisperpower {
         float grid_current_limit = base::unknown<float>();
 
         float generator_frequency = base::unknown<float>();
-        float generator_rpm = base::unknown<float>();
+        float generator_rotational_velocity = base::unknown<float>();
 
         float generator_phase_currents[3] = {
             base::unknown<float>(),
