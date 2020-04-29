@@ -76,6 +76,15 @@ int main(int argc, char** argv)
         cout << "Transmit Period: " << device.getTransmitPeriod() << endl;
         cout << "S/N: " << device.getSerialNumber() << endl;
     }
+    else if (cmd == "dc-cube") {
+        power_whisperpower::DCPowerCube wp_device(device_id);
+
+        while (!wp_device.hasFullUpdate()) {
+            auto msg = can_device->read();
+            wp_device.process(msg);
+        }
+        std::cout << wp_device.getState() << std::endl;
+    }
 
     return 0;
 }

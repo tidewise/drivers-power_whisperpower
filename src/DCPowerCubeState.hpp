@@ -2,11 +2,14 @@
 #define POWER_WHISPERPOWER_DCPOWERCUBESTATE_HPP
 
 #include <cstdint>
+#include <base/Time.hpp>
 #include <base/Float.hpp>
 #include <base/Temperature.hpp>
 
 namespace power_whisperpower {
     struct DCPowerCubeState {
+        base::Time time;
+
         enum Status {
             STATUS_POWER_LIMIT = 0x01,
             STATUS_TEMPERATURE_COMPENSATION = 0x02,
@@ -81,6 +84,8 @@ namespace power_whisperpower {
         base::Temperature temperature_bts;
         base::Temperature temperature_internal[3];
     };
+
+    std::ostream& operator << (std::ostream& io, DCPowerCubeState const& state);
 }
 
 #endif

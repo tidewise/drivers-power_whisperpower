@@ -7,7 +7,9 @@
 namespace power_whisperpower {
     class DCPowerCube : public Device {
         typedef DCPowerCubeState State;
+
         State m_state;
+        bool m_has_full_update = false;
 
     protected:
         virtual void processRead(
@@ -16,7 +18,10 @@ namespace power_whisperpower {
 
     public:
         DCPowerCube(uint8_t device_id);
+        State getState() const;
 
+        bool hasFullUpdate() const;
+        void resetFullUpdate();
     };
 }
 

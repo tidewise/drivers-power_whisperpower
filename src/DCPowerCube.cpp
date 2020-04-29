@@ -11,6 +11,7 @@ void DCPowerCube::processRead(
 ) {
     switch (object_id) {
         case 0x2100:
+            m_state.time = base::Time::now();
             m_state.status = value[0];
             m_state.io_status = value[1];
             m_state.dip_switch = value[2];
@@ -62,7 +63,21 @@ void DCPowerCube::processRead(
                     static_cast<int8_t>(value[1 + i])
                 );
             }
+            m_has_full_update = true;
             break;
     }
-
 }
+
+DCPowerCubeState DCPowerCube::getState() const {
+    return m_state;
+}
+
+bool DCPowerCube::hasFullUpdate() const {
+    return !m_state.time.isNull() && m_has_full_update;
+}
+
+void DCPowerCube::resetFullUpdate() {
+    m_state.time = base::Time();
+    m_has_full_update = false;
+}
+
