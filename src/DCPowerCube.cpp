@@ -13,7 +13,7 @@ void DCPowerCube::processRead(
         case 0x2100:
             m_status.time = base::Time::now();
             m_status.status = value[0];
-            m_status.io_status = value[1];
+            m_status.io_status = value[1] & 0xF;
             m_status.dip_switch = value[2];
             break;
         case 0x2111:
@@ -65,7 +65,7 @@ void DCPowerCube::processRead(
                     static_cast<int8_t>(value[1 + i])
                 );
             }
-            m_has_full_update = true;
+            m_has_full_update = !m_status.time.isNull();
             break;
     }
 }
@@ -75,11 +75,11 @@ DCPowerCubeStatus DCPowerCube::getStatus() const {
 }
 
 bool DCPowerCube::hasFullUpdate() const {
-    return !m_status.time.isNull() && m_has_full_update;
+    return m_has_full_update;
 }
 
 void DCPowerCube::resetFullUpdate() {
+    m_status = DCPowerCubeStatus();
     m_status.time = base::Time();
     m_has_full_update = false;
 }
-

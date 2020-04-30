@@ -22,7 +22,7 @@ namespace power_whisperpower {
         };
 
         /** @meta bitfield /power_whisperpower/DCPowerCubeStatus/Status */
-        uint8_t status;
+        uint8_t status = 0;
 
         enum DigitalIO {
             DIO_IN1 = 0x1,
@@ -32,7 +32,7 @@ namespace power_whisperpower {
         };
 
         /** @meta bitfield /power_whisperpower/DCPowerCubeStatus/DigitalIO */
-        uint8_t io_status;
+        uint8_t io_status = 0;
 
         uint8_t dip_switch = 0;
 
