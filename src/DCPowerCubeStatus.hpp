@@ -1,5 +1,5 @@
-#ifndef POWER_WHISPERPOWER_DCPOWERCUBESTATE_HPP
-#define POWER_WHISPERPOWER_DCPOWERCUBESTATE_HPP
+#ifndef POWER_WHISPERPOWER_DCPOWERCUBESTATUS_HPP
+#define POWER_WHISPERPOWER_DCPOWERCUBESTATUS_HPP
 
 #include <cstdint>
 #include <base/Time.hpp>
@@ -7,7 +7,7 @@
 #include <base/Temperature.hpp>
 
 namespace power_whisperpower {
-    struct DCPowerCubeState {
+    struct DCPowerCubeStatus {
         base::Time time;
 
         enum Status {
@@ -21,8 +21,8 @@ namespace power_whisperpower {
             STATUS_GENERATOR_PRESENT = 0x80
         };
 
-        /** @meta bitfield /power_whisperpower/DCPowerCubeState/Status */
-        uint8_t status;
+        /** @meta bitfield /power_whisperpower/DCPowerCubeStatus/Status */
+        uint8_t status = 0;
 
         enum DigitalIO {
             DIO_IN1 = 0x1,
@@ -31,8 +31,8 @@ namespace power_whisperpower {
             DIO_OUT2 = 0x8
         };
 
-        /** @meta bitfield /power_whisperpower/DCPowerCubeState/DigitalIO */
-        uint8_t io_status;
+        /** @meta bitfield /power_whisperpower/DCPowerCubeStatus/DigitalIO */
+        uint8_t io_status = 0;
 
         uint8_t dip_switch = 0;
 
@@ -41,7 +41,7 @@ namespace power_whisperpower {
         float grid_current_limit = base::unknown<float>();
 
         float generator_frequency = base::unknown<float>();
-        float generator_rpm = base::unknown<float>();
+        float generator_rotational_velocity = base::unknown<float>();
 
         float generator_phase_currents[3] = {
             base::unknown<float>(),
@@ -63,7 +63,7 @@ namespace power_whisperpower {
             BATTERY_USER = 4
         };
 
-        enum ChargingState {
+        enum ChargingStatus {
             CHARGING_UNKNOWN = -1,
             CHARGING_BULK = 1,
             CHARGING_20_40 = 2,
@@ -74,7 +74,7 @@ namespace power_whisperpower {
         };
 
         BatteryType battery_type = BATTERY_UNKNOWN;
-        ChargingState charging_state = CHARGING_UNKNOWN;
+        ChargingStatus charging_status = CHARGING_UNKNOWN;
 
         float dc_output_voltage = base::unknown<float>();
         float dc_slave_voltage = base::unknown<float>();
@@ -85,7 +85,7 @@ namespace power_whisperpower {
         base::Temperature temperature_internal[3];
     };
 
-    std::ostream& operator << (std::ostream& io, DCPowerCubeState const& state);
+    std::ostream& operator << (std::ostream& io, DCPowerCubeStatus const& state);
 }
 
 #endif

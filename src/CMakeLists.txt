@@ -1,6 +1,10 @@
 rock_library(power_whisperpower
-    SOURCES Device.cpp Protocol.cpp DCPowerCube.cpp DCPowerCubeState.cpp
-    HEADERS Device.hpp Protocol.hpp DCPowerCube.hpp DCPowerCubeState.hpp
+    SOURCES Device.cpp Protocol.cpp
+            DCPowerCube.cpp DCPowerCubeStatus.cpp
+            SmartShunt.cpp
+    HEADERS Device.hpp Protocol.hpp
+            DCPowerCube.hpp DCPowerCubeStatus.hpp
+            SmartShunt.hpp SmartShuntStatus.hpp
     DEPS_PKGCONFIG base-types canbus)
 
 rock_executable(power_whisperpower_ctl

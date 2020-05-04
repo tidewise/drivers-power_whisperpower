@@ -1,13 +1,13 @@
-#ifndef POWER_WHISPERPOWER_DCPOWERCUBE_HPP
-#define POWER_WHISPERPOWER_DCPOWERCUBE_HPP
+#ifndef POWER_WHISPERPOWER_SMARTSHUNT_HPP
+#define POWER_WHISPERPOWER_SMARTSHUNT_HPP
 
 #include <power_whisperpower/Device.hpp>
-#include <power_whisperpower/DCPowerCubeStatus.hpp>
+#include <power_whisperpower/SmartShuntStatus.hpp>
 
 namespace power_whisperpower {
-    /** Driver for the WhisperPower DC Cube
+    /** Driver for the WhisperPower Smart Shunt
      *
-     * Since DC power cubes are connected through a CAN bus, this class only
+     * Since smart shunts are connected through a CAN bus, this class only
      * provides interpretation and generation of CAN messages. Use one CAN
      * driver from Rock's drivers/canbus (or elsewhere) to actually transmit/
      * receive messages from the bus
@@ -20,8 +20,8 @@ namespace power_whisperpower {
      *
      * Then call \c resetFullUpdate to start a new cycle
      */
-    class DCPowerCube : public Device {
-        typedef DCPowerCubeStatus Status;
+    class SmartShunt : public Device {
+        typedef SmartShuntStatus Status;
 
         Status m_status;
         bool m_has_full_update = false;
@@ -32,10 +32,13 @@ namespace power_whisperpower {
         );
 
     public:
-        DCPowerCube(uint8_t device_id);
+        SmartShunt(uint8_t device_id);
 
-        /** Return the last known DC cube status */
-        Status getStatus() const;
+        /** The current known status
+         *
+         * The status is reset to unknown by \c resetFullUpdate
+         */
+        SmartShuntStatus getStatus() const;
 
         /** Check if a full update to the smart shunt status has been received
          *

@@ -1,5 +1,4 @@
 #include <power_whisperpower/Device.hpp>
-#include <iostream>
 
 using namespace std;
 using namespace power_whisperpower;
@@ -44,7 +43,6 @@ void Device::process(canbus::Message const& message) {
     auto node_id = protocol::getNodeID(message);
 
     if (node_id != m_node_id) {
-        std::cerr << "Bad node ID, expected " << (int)m_node_id << " got " << (int)node_id;
         return;
     }
     else if (function_code != protocol::FUNCTION_SEND) {
@@ -56,7 +54,6 @@ void Device::process(canbus::Message const& message) {
     auto command = static_cast<protocol::Commands>(message.data[0]);
     uint16_t object_id = protocol::fromBigEndian<uint16_t>(message.data + 1);
     uint8_t object_sub_id = message.data[3];
-    std::cerr << "command " << command << " object_id=" << object_id << " object_sub_id=" << object_sub_id << std::endl;
 
     if (command == protocol::COMMAND_ABORT) {
         processAbortMessage(message, object_id, object_sub_id);
@@ -143,11 +140,6 @@ void Device::processRead(
 ) {
     switch (object_id) {
         case OID_SERIAL_NUMBER:
-            std::cerr << "got serial number " << std::endl;
-            for (int i = 0; i < 4; ++i) {
-                std::cerr << (int)value[i] << " " << std::endl;
-                }
-
             m_serial_number = protocol::fromBigEndian<uint32_t>(value);
             return;
         case OID_TRANSMIT_PERIOD: {
