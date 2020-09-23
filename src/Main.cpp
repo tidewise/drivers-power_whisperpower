@@ -90,6 +90,11 @@ int main(int argc, char** argv)
             wp_device.process(msg);
         }
         std::cout << wp_device.getStatus() << std::endl;
+
+        for (auto msg_id: wp_device.getConfigMessages()) {
+            waitResult(*can_device, wp_device, wp_device.queryRead(msg_id));
+        }
+        std::cout << wp_device.getConfig() << std::endl;
     }
 
     return 0;

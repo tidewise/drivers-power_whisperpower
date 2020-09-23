@@ -133,3 +133,46 @@ TEST_F(DCPowerCubeTest, it_reports_a_partial_update_if_the_last_message_is_recei
     cube.process(msg);
     ASSERT_FALSE(cube.hasFullUpdate());
 }
+
+TEST_F(DCPowerCubeTest, it_parses_a_control_message_with_force_to_float_set) {
+    canbus::Message msg = makeReadReply(0x32, 0x5100, 0, { 0, 0, 0, 0x2 });
+    cube.process(msg);
+    ASSERT_FALSE(cube.getConfig().dc_output_enabled);
+    ASSERT_TRUE(cube.getConfig().force_to_float);
+}
+
+TEST_F(DCPowerCubeTest, it_parses_a_control_message_with_dc_output_on) {
+    canbus::Message msg = makeReadReply(0x32, 0x5100, 0, { 0, 0, 0, 0x1 });
+    cube.process(msg);
+    ASSERT_TRUE(cube.getConfig().dc_output_enabled);
+    ASSERT_FALSE(cube.getConfig().force_to_float);
+}
+
+TEST_F(DCPowerCubeTest, it_parses_a_control_message_with_both_dc_output_and_force_to_float_set) {
+    canbus::Message msg = makeReadReply(0x32, 0x5100, 0, { 0, 0, 0, 0x3 });
+    cube.process(msg);
+    ASSERT_TRUE(cube.getConfig().dc_output_enabled);
+    ASSERT_TRUE(cube.getConfig().force_to_float);
+}
+
+TEST_F(DCPowerCubeTest, it_parses_a_control_message_with_neither_dc_output_nor_force_to_float_set) {
+    canbus::Message msg = makeReadReply(0x32, 0x5100, 0, { 0, 0, 0, 0x0 });
+    cube.process(msg);
+    ASSERT_FALSE(cube.getConfig().dc_output_enabled);
+    ASSERT_FALSE(cube.getConfig().force_to_float);
+}
+
+TEST_F(DCPowerCubeTest, it_parses_the_current_limit_control_message) {
+    canbus::Message msg = makeReadReply(0x32, 0x5101, 0, { 40, 10, 5, 0 });
+    cube.process(msg);
+    ASSERT_EQ(40, cube.getConfig().current_limit_charger);
+    ASSERT_EQ(10, cube.getConfig().current_limit_grid);
+    ASSERT_EQ(5, cube.getConfig().current_limit_generator);
+}
+
+TEST_F(DCPowerCubeTest, it_parses_the_charger_setpoints) {
+    canbus::Message msg = makeReadReply(0x32, 0x5102, 0, { 40, 0x1, 0x23, 0 });
+    cube.process(msg);
+    ASSERT_EQ(40, cube.getConfig().charger_current_setpoint);
+    ASSERT_EQ(static_cast<float>(0x123) / 1000, cube.getConfig().charger_voltage_setpoint);
+}
