@@ -120,6 +120,19 @@ namespace power_whisperpower {
             uint32_t result = fromBigEndian<uint32_t>(data);
             return reinterpret_cast<int32_t const&>(result);
         }
+
+        template<> inline std::string fromBigEndian(uint8_t const* data)
+        {
+            size_t size = 0;
+            for (size = 0; size < 4; ++size) {
+            if (data[size] == 0)
+                break;
+            }
+            return std::string(
+                reinterpret_cast<char const*>(data),
+                reinterpret_cast<char const*>(data + size)
+            );
+        }
     }
 }
 

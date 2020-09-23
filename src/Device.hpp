@@ -28,6 +28,9 @@ namespace power_whisperpower {
         uint16_t m_wait_object_id;
         uint16_t m_wait_object_sub_id;
 
+        std::string m_device_name;
+        std::string m_hardware_version;
+        std::string m_software_version;
         uint32_t m_serial_number = 0;
         bool m_has_transmit_period = false;
         base::Time m_transmit_period;
@@ -40,6 +43,9 @@ namespace power_whisperpower {
         void processAbortMessage(canbus::Message const& message,
                                  uint16_t object_id, uint8_t object_sub_id);
 
+        static const int OID_DEVICE_NAME = 0x1008;
+        static const int OID_HARDWARE_VERSION = 0x1009;
+        static const int OID_SOFTWARE_VERSION = 0x100A;
         static const int OID_SERIAL_NUMBER = 0x1018;
         static const int OID_TRANSMIT_PERIOD = 0x9100;
 
@@ -57,6 +63,24 @@ namespace power_whisperpower {
         /** How long we have been waiting for a specific reply from the device
          */
         base::Time getElapsedWaitTime() const;
+
+        /** Return a message that queries the device name */
+        canbus::Message queryDeviceName();
+
+        /** Return the last received device name */
+        std::string getDeviceName();
+
+        /** Return a message that queries the software version from the device */
+        canbus::Message queryHardwareVersion();
+
+        /** Return the last received software version */
+        std::string getHardwareVersion();
+
+        /** Return a message that queries the software version from the device */
+        canbus::Message querySoftwareVersion();
+
+        /** Return the last received software version */
+        std::string getSoftwareVersion();
 
         /** Return a message that queries the serial number from the device */
         canbus::Message querySerialNumber();

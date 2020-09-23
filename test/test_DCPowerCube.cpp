@@ -12,6 +12,14 @@ struct DCPowerCubeTest : public ::testing::Test, Helpers {
     }
 };
 
+TEST_F(DCPowerCubeTest, it_passes_the_common_messages_to_the_base_class) {
+    canbus::Message msg = makeReadReply(
+        0x32, 0x1018, 0, { 0x89, 0xAB, 0xCD, 0xEF }
+    );
+    cube.process(msg);
+    ASSERT_EQ(0x89ABCDEF, cube.getSerialNumber());
+}
+
 TEST_F(DCPowerCubeTest, it_reads_the_status_bytes) {
     canbus::Message msg = makeReadReply(
         0x32, 0x2100, 0, { 0b10101010, 0b01010101, 0b11001100 }

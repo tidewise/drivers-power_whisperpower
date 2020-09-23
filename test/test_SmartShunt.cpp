@@ -20,6 +20,14 @@ struct SmartShuntTest : public ::testing::Test, Helpers {
     }
 };
 
+TEST_F(SmartShuntTest, it_passes_the_common_messages_to_the_base_class) {
+    canbus::Message msg = makeReadReply(
+        0x12, 0x1018, 0, { 0x89, 0xAB, 0xCD, 0xEF }
+    );
+    shunt.process(msg);
+    ASSERT_EQ(0x89ABCDEF, shunt.getSerialNumber());
+}
+
 TEST_F(SmartShuntTest, it_reads_the_relay_1_overrule_flag) {
     processReadReply(0x2100, { 0, 1, 0, 0 });
     ASSERT_TRUE(shunt.getStatus().relay_overrule_enable[0]);

@@ -66,9 +66,7 @@ std::ostream& power_whisperpower::operator << (std::ostream& io, DCPowerCubeStat
 
     io << "DIP Switches: ";
     for (int i = 0; i < 8; ++i) {
-        if (state.dip_switch & (1 << i)) {
-            io << " " << i;
-        }
+        io << " " << ((state.dip_switch & (1 << i)) ? '1' : '0');
     }
     io << "\n";
 

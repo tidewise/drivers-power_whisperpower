@@ -67,6 +67,8 @@ void DCPowerCube::processRead(
             }
             m_has_full_update = !m_status.time.isNull();
             break;
+        default:
+            return Device::processRead(object_id, object_sub_id, value);
     }
 }
 

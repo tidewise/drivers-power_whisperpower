@@ -10,6 +10,30 @@ Device::Device(protocol::NodeIDGroups group, uint8_t device_id)
 Device::~Device() {
 }
 
+canbus::Message Device::queryDeviceName() {
+    return queryRead(OID_DEVICE_NAME);
+}
+
+std::string Device::getDeviceName() {
+    return m_device_name;
+}
+
+canbus::Message Device::queryHardwareVersion() {
+    return queryRead(OID_HARDWARE_VERSION);
+}
+
+std::string Device::getHardwareVersion() {
+    return m_hardware_version;
+}
+
+canbus::Message Device::querySoftwareVersion() {
+    return queryRead(OID_SOFTWARE_VERSION);
+}
+
+std::string Device::getSoftwareVersion() {
+    return m_software_version;
+}
+
 canbus::Message Device::querySerialNumber() {
     return queryRead(OID_SERIAL_NUMBER);
 }
@@ -141,6 +165,17 @@ void Device::processRead(
     switch (object_id) {
         case OID_SERIAL_NUMBER:
             m_serial_number = protocol::fromBigEndian<uint32_t>(value);
+            return;
+        case OID_DEVICE_NAME:
+        {
+            m_device_name = protocol::fromBigEndian<string>(value);
+            return;
+        }
+        case OID_HARDWARE_VERSION:
+            m_hardware_version = protocol::fromBigEndian<string>(value);
+            return;
+        case OID_SOFTWARE_VERSION:
+            m_software_version = protocol::fromBigEndian<string>(value);
             return;
         case OID_TRANSMIT_PERIOD: {
             m_has_transmit_period = true;

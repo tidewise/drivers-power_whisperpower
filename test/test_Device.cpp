@@ -34,6 +34,38 @@ struct MockDeviceTest : public ::testing::Test,
     }
 };
 
+TEST_F(DeviceTest, it_queries_the_device_name) {
+    auto msg = device.queryDeviceName();
+    ASSERT_DEVICE_READ(msg, NODE_ID, 0x1008, 0);
+    auto reply = makeReadReply(NODE_ID, 0x1008, 0, { 'A', 'B', 'C', 'D' });
+    device.process(reply);
+    ASSERT_EQ("ABCD", device.getDeviceName());
+}
+
+TEST_F(DeviceTest, it_queries_the_hardware_version) {
+    auto msg = device.queryHardwareVersion();
+    ASSERT_DEVICE_READ(msg, NODE_ID, 0x1009, 0);
+    auto reply = makeReadReply(NODE_ID, 0x1009, 0, { 'A', 'B', 'C', 'D' });
+    device.process(reply);
+    ASSERT_EQ("ABCD", device.getHardwareVersion());
+}
+
+TEST_F(DeviceTest, it_queries_the_software_version) {
+    auto msg = device.querySoftwareVersion();
+    ASSERT_DEVICE_READ(msg, NODE_ID, 0x100A, 0);
+    auto reply = makeReadReply(NODE_ID, 0x100A, 0, { 'A', 'B', 'C', 'D' });
+    device.process(reply);
+    ASSERT_EQ("ABCD", device.getSoftwareVersion());
+}
+
+TEST_F(DeviceTest, it_queries_the_serial_number) {
+    auto msg = device.querySerialNumber();
+    ASSERT_DEVICE_READ(msg, NODE_ID, 0x1018, 0);
+    auto reply = makeReadReply(NODE_ID, 0x1018, 0, { 0x01, 0x23, 0x34, 0x45 });
+    device.process(reply);
+    ASSERT_EQ(0x1233445, device.getSerialNumber());
+}
+
 TEST_F(DeviceTest, it_queries_a_write) {
     auto msg = device.queryWrite<int32_t>(0x4284, 0x12, 0x12345678);
     ASSERT_DEVICE_WRITE(msg, NODE_ID, 0x4284, 0x12, { 0x12, 0x34, 0x56, 0x78 });
