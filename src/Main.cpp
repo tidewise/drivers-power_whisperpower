@@ -70,11 +70,17 @@ int main(int argc, char** argv)
 
     if (cmd == "info") {
         power_whisperpower::Device device(device_group, device_id);
+        waitResult(*can_device, device, device.queryDeviceName());
+        waitResult(*can_device, device, device.queryHardwareVersion());
+        waitResult(*can_device, device, device.querySoftwareVersion());
         waitResult(*can_device, device, device.querySerialNumber());
         waitResult(*can_device, device, device.queryTransmitPeriod());
 
+        cout << "Device Name: " << device.getDeviceName() << endl;
+        cout << "Hardware Version: " << device.getHardwareVersion() << endl;
+        cout << "Software Version: " << device.getSoftwareVersion() << endl;
         cout << "Transmit Period: " << device.getTransmitPeriod() << endl;
-        cout << "S/N: " << device.getSerialNumber() << endl;
+        cout << "Serial Number: " << device.getSerialNumber() << endl;
     }
     else if (cmd == "dc-cube") {
         power_whisperpower::DCPowerCube wp_device(device_id);
@@ -84,6 +90,11 @@ int main(int argc, char** argv)
             wp_device.process(msg);
         }
         std::cout << wp_device.getStatus() << std::endl;
+
+        for (auto msg_id: wp_device.getConfigMessages()) {
+            waitResult(*can_device, wp_device, wp_device.queryRead(msg_id));
+        }
+        std::cout << wp_device.getConfig() << std::endl;
     }
 
     return 0;

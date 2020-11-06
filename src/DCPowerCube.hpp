@@ -3,6 +3,7 @@
 
 #include <power_whisperpower/Device.hpp>
 #include <power_whisperpower/DCPowerCubeStatus.hpp>
+#include <power_whisperpower/DCPowerCubeConfig.hpp>
 
 namespace power_whisperpower {
     /** Driver for the WhisperPower DC Cube
@@ -22,9 +23,12 @@ namespace power_whisperpower {
      */
     class DCPowerCube : public Device {
         typedef DCPowerCubeStatus Status;
+        typedef DCPowerCubeConfig Config;
 
         Status m_status;
         bool m_has_full_update = false;
+
+        Config m_config;
 
     protected:
         virtual void processRead(
@@ -33,6 +37,20 @@ namespace power_whisperpower {
 
     public:
         DCPowerCube(uint8_t device_id);
+
+        /** Return the set of messages that will update the DC cube configuration
+         * structure
+         *
+         * Call queryRead to get the corresponding read message
+         */
+        std::vector<uint16_t> getConfigMessages() const;
+
+        /** Return the last known configuration state
+         *
+         * All messages from queryConfig() must have been sent and be processed
+         * for the return value to make sense
+         */
+        Config getConfig() const;
 
         /** Return the last known DC cube status */
         Status getStatus() const;

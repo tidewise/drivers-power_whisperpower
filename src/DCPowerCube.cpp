@@ -67,7 +67,32 @@ void DCPowerCube::processRead(
             }
             m_has_full_update = !m_status.time.isNull();
             break;
+        case 0x5100:
+            m_config.dc_output_enabled = value[3] & 0x1;
+            m_config.force_to_float = value[3] & 0x2;
+            break;
+        case 0x5101:
+            m_config.current_limit_charger = value[0];
+            m_config.current_limit_grid = value[1];
+            m_config.current_limit_generator = value[2];
+            break;
+        case 0x5102:
+            m_config.charger_current_setpoint = value[0];
+            m_config.charger_voltage_setpoint = static_cast<float>(
+                protocol::fromBigEndian<uint16_t>(value + 1)
+            ) / 1000;
+            break;
+        default:
+            return Device::processRead(object_id, object_sub_id, value);
     }
+}
+
+std::vector<uint16_t> DCPowerCube::getConfigMessages() const {
+    return std::vector<uint16_t>{ 0x5100, 0x5101, 0x5102 };
+}
+
+DCPowerCubeConfig DCPowerCube::getConfig() const {
+    return m_config;
 }
 
 DCPowerCubeStatus DCPowerCube::getStatus() const {
