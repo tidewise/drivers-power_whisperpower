@@ -37,8 +37,8 @@ namespace power_whisperpower {
         uint8_t dip_switch = 0;
 
         float grid_voltage = base::unknown<float>();
-        float grid_current = base::unknown<float>();
-        float grid_current_limit = base::unknown<float>();
+        float grid_current = 0;
+        float grid_current_limit = 0;
 
         float generator_frequency = base::unknown<float>();
         float generator_rotational_velocity = base::unknown<float>();
@@ -48,7 +48,7 @@ namespace power_whisperpower {
             base::unknown<float>(),
             base::unknown<float>()
         };
-        float generator_current_limit = base::unknown<float>();
+        float generator_current_limit = 0;
 
         float load_percentage_grid = base::unknown<float>();
         float load_percentage_generator = base::unknown<float>();

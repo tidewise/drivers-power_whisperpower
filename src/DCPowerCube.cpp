@@ -13,29 +13,41 @@ void DCPowerCube::processRead(
         case 0x2100:
             m_status.time = base::Time::now();
             m_status.status = value[0];
+            zeroGridIfAbsent();
+            zeroGeneratorIfAbsent();
             m_status.io_status = value[1] & 0xF;
             m_status.dip_switch = value[2];
             break;
         case 0x2111:
-            m_status.grid_voltage = protocol::fromBigEndian<uint16_t>(value);
-            m_status.grid_current = value[2];
-            m_status.grid_current_limit = value[3];
+            if (m_status.status & DCPowerCubeStatus::STATUS_GRID_PRESENT) {
+                m_status.grid_voltage = protocol::fromBigEndian<uint16_t>(value);
+                m_status.grid_current = value[2];
+                m_status.grid_current_limit = value[3];
+            }
             break;
         case 0x2112: {
-            m_status.generator_frequency = protocol::fromBigEndian<uint16_t>(value);
-            float rpm = protocol::fromBigEndian<uint16_t>(value + 2);
-            m_status.generator_rotational_velocity = rpm * 60 * 2 * M_PI;
+            if (m_status.status & DCPowerCubeStatus::STATUS_GENERATOR_PRESENT) {
+                m_status.generator_frequency = protocol::fromBigEndian<uint16_t>(value);
+                float rpm = protocol::fromBigEndian<uint16_t>(value + 2);
+                m_status.generator_rotational_velocity = rpm * 60 * 2 * M_PI;
+            }
             break;
         }
         case 0x2113:
-            m_status.generator_phase_currents[0] = static_cast<float>(value[0]) / 10;
-            m_status.generator_phase_currents[1] = static_cast<float>(value[1]) / 10;
-            m_status.generator_phase_currents[2] = static_cast<float>(value[2]) / 10;
-            m_status.generator_current_limit = static_cast<float>(value[3]) / 10;
+            if (m_status.status & DCPowerCubeStatus::STATUS_GENERATOR_PRESENT) {
+                m_status.generator_phase_currents[0] = static_cast<float>(value[0]) / 10;
+                m_status.generator_phase_currents[1] = static_cast<float>(value[1]) / 10;
+                m_status.generator_phase_currents[2] = static_cast<float>(value[2]) / 10;
+                m_status.generator_current_limit = static_cast<float>(value[3]) / 10;
+            }
             break;
         case 0x2114:
-            m_status.load_percentage_grid = static_cast<float>(value[0]) / 100;
-            m_status.load_percentage_generator = static_cast<float>(value[1]) / 100;
+            if (m_status.status & DCPowerCubeStatus::STATUS_GRID_PRESENT) {
+                m_status.load_percentage_grid = static_cast<float>(value[0]) / 100;
+            }
+            if (m_status.status & DCPowerCubeStatus::STATUS_GENERATOR_PRESENT) {
+                m_status.load_percentage_generator = static_cast<float>(value[1]) / 100;
+            }
             m_status.load_percentage_dc_output = static_cast<float>(value[2]) / 100;
             break;
         case 0x2151:
@@ -97,6 +109,32 @@ DCPowerCubeConfig DCPowerCube::getConfig() const {
 
 DCPowerCubeStatus DCPowerCube::getStatus() const {
     return m_status;
+}
+
+void DCPowerCube::zeroGridIfAbsent() {
+    // "Correct" the status by zeroing grid and/or generator if they are not present
+    if (m_status.status & DCPowerCubeStatus::STATUS_GRID_PRESENT) {
+        return;
+    }
+
+    m_status.grid_current = base::unknown<float>();
+    m_status.grid_voltage = base::unknown<float>();
+    m_status.grid_current_limit = 0;
+    m_status.load_percentage_grid = 0;
+}
+
+void DCPowerCube::zeroGeneratorIfAbsent() {
+    if (m_status.status & DCPowerCubeStatus::STATUS_GENERATOR_PRESENT) {
+        return;
+    }
+
+    m_status.generator_frequency = base::unknown<float>();
+    m_status.generator_phase_currents[0] = base::unknown<float>();
+    m_status.generator_phase_currents[1] = base::unknown<float>();
+    m_status.generator_phase_currents[2] = base::unknown<float>();
+    m_status.generator_rotational_velocity = base::unknown<float>();
+    m_status.generator_current_limit = 0;
+    m_status.load_percentage_generator = 0;
 }
 
 bool DCPowerCube::hasFullUpdate() const {

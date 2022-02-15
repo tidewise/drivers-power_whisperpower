@@ -30,6 +30,9 @@ namespace power_whisperpower {
 
         Config m_config;
 
+        void zeroGeneratorIfAbsent();
+        void zeroGridIfAbsent();
+
     protected:
         virtual void processRead(
             uint16_t object_id, uint8_t object_sub_id, uint8_t const* value
