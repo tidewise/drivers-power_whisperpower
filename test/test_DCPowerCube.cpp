@@ -31,15 +31,44 @@ TEST_F(DCPowerCubeTest, it_reads_the_status_bytes) {
 }
 
 TEST_F(DCPowerCubeTest, it_reads_grid_voltage_and_current) {
-    canbus::Message msg = makeReadReply(0x32, 0x2111, 0, { 0x12, 0x34, 0x56, 0x78 });
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0x40, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2111, 0, { 0x12, 0x34, 0x56, 0x78 });
     cube.process(msg);
     ASSERT_FLOAT_EQ(0x1234, cube.getStatus().grid_voltage);
     ASSERT_FLOAT_EQ(0x56, cube.getStatus().grid_current);
     ASSERT_FLOAT_EQ(0x78, cube.getStatus().grid_current_limit);
 }
 
+TEST_F(DCPowerCubeTest, it_resets_the_grid_info_when_status_is_received) {
+    // GRID_PRESENT
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0x40, 0, 0, 0 });
+    cube.process(msg);
+    // grid info
+    msg = makeReadReply(0x32, 0x2111, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    // !GRID_PRESENT
+    msg = makeReadReply(0x32, 0x2100, 0, { 0, 0, 0, 0x78 });
+    cube.process(msg);
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().grid_voltage));
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().grid_current));
+    ASSERT_FLOAT_EQ(0, cube.getStatus().grid_current_limit);
+}
+
+TEST_F(DCPowerCubeTest, it_ignores_grid_info_if_the_grid_is_absent) {
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0, 0, 0, 0x78 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2111, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().grid_voltage));
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().grid_current));
+    ASSERT_FLOAT_EQ(0, cube.getStatus().grid_current_limit);
+}
+
 TEST_F(DCPowerCubeTest, it_reads_generator_frequency_and_speed) {
-    canbus::Message msg = makeReadReply(0x32, 0x2112, 0, { 0x12, 0x34, 0x56, 0x78 });
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0x80, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2112, 0, { 0x12, 0x34, 0x56, 0x78 });
     cube.process(msg);
     ASSERT_FLOAT_EQ(0x1234, cube.getStatus().generator_frequency);
     ASSERT_FLOAT_EQ(
@@ -48,8 +77,34 @@ TEST_F(DCPowerCubeTest, it_reads_generator_frequency_and_speed) {
     );
 }
 
+TEST_F(DCPowerCubeTest, it_resets_generator_frequency_and_speed_if_the_generator_is_absent) {
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0x80, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2112, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2100, 0, { 0, 0, 0, 0 });
+    cube.process(msg);
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().generator_frequency));
+    ASSERT_TRUE(
+        base::isUnknown(cube.getStatus().generator_rotational_velocity)
+    );
+}
+
+TEST_F(DCPowerCubeTest, it_ignores_generator_frequency_and_speed_if_the_generator_is_absent) {
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2112, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().generator_frequency));
+    ASSERT_TRUE(
+        base::isUnknown(cube.getStatus().generator_rotational_velocity)
+    );
+}
+
 TEST_F(DCPowerCubeTest, it_reads_generator_currents) {
-    canbus::Message msg = makeReadReply(0x32, 0x2113, 0, { 0x12, 0x34, 0x56, 0x78 });
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0x80, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2113, 0, { 0x12, 0x34, 0x56, 0x78 });
     cube.process(msg);
     ASSERT_FLOAT_EQ(static_cast<float>(0x12) / 10,
                     cube.getStatus().generator_phase_currents[0]);
@@ -61,13 +116,91 @@ TEST_F(DCPowerCubeTest, it_reads_generator_currents) {
                     cube.getStatus().generator_current_limit);
 }
 
+TEST_F(DCPowerCubeTest, it_resets_generator_currents_if_the_generator_becomes_absent) {
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0x80, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2113, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2100, 0, { 0, 0, 0, 0 });
+    cube.process(msg);
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().generator_phase_currents[0]));
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().generator_phase_currents[1]));
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().generator_phase_currents[2]));
+    ASSERT_FLOAT_EQ(0, cube.getStatus().generator_current_limit);
+}
+
+TEST_F(DCPowerCubeTest, it_ignores_the_generator_currents_if_it_is_absent) {
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2113, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().generator_phase_currents[0]));
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().generator_phase_currents[1]));
+    ASSERT_TRUE(base::isUnknown(cube.getStatus().generator_phase_currents[2]));
+    ASSERT_FLOAT_EQ(0, cube.getStatus().generator_current_limit);
+}
+
 TEST_F(DCPowerCubeTest, it_reads_load_percentages) {
-    canbus::Message msg = makeReadReply(0x32, 0x2114, 0, { 0x12, 0x34, 0x56, 0x78 });
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0xC0, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2114, 0, { 0x12, 0x34, 0x56, 0x78 });
     cube.process(msg);
     ASSERT_FLOAT_EQ(static_cast<float>(0x12) / 100,
                     cube.getStatus().load_percentage_grid);
     ASSERT_FLOAT_EQ(static_cast<float>(0x34) / 100,
                     cube.getStatus().load_percentage_generator);
+    ASSERT_FLOAT_EQ(static_cast<float>(0x56) / 100,
+                    cube.getStatus().load_percentage_dc_output);
+}
+
+TEST_F(DCPowerCubeTest, it_zeroes_the_grid_load_percentage_if_it_becomes_absent) {
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0xC0, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2114, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2100, 0, { 0x80, 0, 0, 0 });
+    cube.process(msg);
+    ASSERT_FLOAT_EQ(0, cube.getStatus().load_percentage_grid);
+    ASSERT_FLOAT_EQ(static_cast<float>(0x34) / 100,
+                    cube.getStatus().load_percentage_generator);
+    ASSERT_FLOAT_EQ(static_cast<float>(0x56) / 100,
+                    cube.getStatus().load_percentage_dc_output);
+}
+
+TEST_F(DCPowerCubeTest, it_ignores_the_grid_load_percentage_if_it_is_absent) {
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0x80, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2114, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    ASSERT_FLOAT_EQ(0, cube.getStatus().load_percentage_grid);
+    ASSERT_FLOAT_EQ(static_cast<float>(0x34) / 100,
+                    cube.getStatus().load_percentage_generator);
+    ASSERT_FLOAT_EQ(static_cast<float>(0x56) / 100,
+                    cube.getStatus().load_percentage_dc_output);
+}
+
+TEST_F(DCPowerCubeTest, it_zeroes_the_generator_load_percentage_if_it_becomes_absent) {
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0xC0, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2114, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2100, 0, { 0x40, 0, 0, 0 });
+    cube.process(msg);
+    ASSERT_FLOAT_EQ(static_cast<float>(0x12) / 100,
+                    cube.getStatus().load_percentage_grid);
+    ASSERT_FLOAT_EQ(0, cube.getStatus().load_percentage_generator);
+    ASSERT_FLOAT_EQ(static_cast<float>(0x56) / 100,
+                    cube.getStatus().load_percentage_dc_output);
+}
+
+TEST_F(DCPowerCubeTest, it_ignores_the_generator_load_percentage_if_it_is_absent) {
+    canbus::Message msg = makeReadReply(0x32, 0x2100, 0, { 0x40, 0, 0, 0 });
+    cube.process(msg);
+    msg = makeReadReply(0x32, 0x2114, 0, { 0x12, 0x34, 0x56, 0x78 });
+    cube.process(msg);
+    ASSERT_FLOAT_EQ(static_cast<float>(0x12) / 100,
+                    cube.getStatus().load_percentage_grid);
+    ASSERT_FLOAT_EQ(0, cube.getStatus().load_percentage_generator);
     ASSERT_FLOAT_EQ(static_cast<float>(0x56) / 100,
                     cube.getStatus().load_percentage_dc_output);
 }
