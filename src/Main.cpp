@@ -97,6 +97,18 @@ int main(int argc, char** argv)
         }
         std::cout << wp_device.getConfig() << std::endl;
     }
+    else if (cmd == "set_id") {
+        if (argc != 7)
+        {
+            std::cerr << "wrong number of arguments" << std::endl;
+        }
+        power_whisperpower::Device device(device_group, device_id);
+        waitResult(*can_device, device, device.querySerialNumber());
+        uint32_t serial_number = device.getSerialNumber();
+        int device_new_id(std::stoi(argv[6]));
+        device.setId(device_new_id, serial_number);
+        std::cout << "New device Id: " << device_new_id << std::endl;
+    }
 
     return 0;
 }
