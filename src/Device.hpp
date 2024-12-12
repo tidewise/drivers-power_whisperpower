@@ -48,6 +48,7 @@ namespace power_whisperpower {
         static const int OID_SOFTWARE_VERSION = 0x100A;
         static const int OID_SERIAL_NUMBER = 0x1018;
         static const int OID_TRANSMIT_PERIOD = 0x9100;
+        static const int OID_CAN_ID = 0x9200;
 
     protected:
         virtual void processRead(
@@ -60,6 +61,7 @@ namespace power_whisperpower {
 
         bool isWaiting() const;
 
+        canbus::Message setId(uint8_t id, uint32_t serial_number);
         /** How long we have been waiting for a specific reply from the device
          */
         base::Time getElapsedWaitTime() const;

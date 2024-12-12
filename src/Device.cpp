@@ -42,6 +42,10 @@ uint32_t Device::getSerialNumber() const {
     return m_serial_number;
 }
 
+canbus::Message Device::setId(uint8_t id, uint32_t serial_number) {
+    return queryWrite<uint32_t>(OID_CAN_ID, id, serial_number);
+}
+
 canbus::Message Device::queryTransmitPeriod() {
     return queryRead(OID_TRANSMIT_PERIOD);
 }
