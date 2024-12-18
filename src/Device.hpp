@@ -61,7 +61,7 @@ namespace power_whisperpower {
 
         bool isWaiting() const;
 
-        canbus::Message setId(uint8_t id, uint32_t serial_number);
+        canbus::Message querySetId(uint8_t id, uint32_t serial_number);
         /** How long we have been waiting for a specific reply from the device
          */
         base::Time getElapsedWaitTime() const;

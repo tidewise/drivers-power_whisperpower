@@ -106,7 +106,9 @@ int main(int argc, char** argv)
         waitResult(*can_device, device, device.querySerialNumber());
         uint32_t serial_number = device.getSerialNumber();
         int device_new_id(std::stoi(argv[6]));
-        device.setId(device_new_id, serial_number);
+        waitResult(*can_device, device, device.querySetId(device_new_id, serial_number));
+
+        // TODO: get the actual returned id
         std::cout << "New device Id: " << device_new_id << std::endl;
     }
 
