@@ -19,19 +19,15 @@ namespace power_whisperpower {
      *
      * Then call \c resetFullUpdate to start a new cycle
      */
-    class PMGGenverter : public Device {
+    class PMGGenverter {
         typedef PMGGenverterStatus Status;
 
         Status m_status;
         bool m_has_full_update = false;
-
-    protected:
-        virtual void processRead(
-            uint16_t object_id, uint8_t object_sub_id, uint8_t const* value
-        );
+        uint8_t m_run_ramp = 0;
 
     public:
-        PMGGenverter(uint8_t device_id);
+        PMGGenverter();
 
         /** The current known status
          *

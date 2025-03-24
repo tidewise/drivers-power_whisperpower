@@ -3,16 +3,13 @@
 using namespace power_whisperpower;
 using protocol::fromBigEndian;
 
-PMGGenverter::PMGGenverter(uint8_t device_id)
-    : Device(protocol::NODE_GROUP_GENERATOR, device_id)
+PMGGenverter::PMGGenverter()
 {
 }
 
-void PMGGenverter::processRead(uint16_t can_id,
-    uint8_t object_sub_id,
-    uint8_t const* value)
+void PMGGenverter::process(canbus::Message const& msg)
 {
-    switch (can_id) {
+    switch (msg.can_id) {
         case 0x200:
             m_status.time = base::Time::now();
             m_status.ac_voltage = static_cast<float>(fromBigEndian<uint16_t>(value)) / 10;
@@ -59,8 +56,6 @@ void PMGGenverter::processRead(uint16_t can_id,
             m_status.maintenance_minute_work =
                 base::Time::fromSeconds(fromBigEndian<uint16_t>(value + 32) * 60);
             break;
-        default:
-            return Device::processRead(can_id, object_sub_id, value);
     }
 }
 
