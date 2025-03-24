@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 {
     using namespace std::chrono_literals;
 
-    if (argc < 6) {
+    if (argc < 3) {
         usage(cerr);
         return 1;
     }
