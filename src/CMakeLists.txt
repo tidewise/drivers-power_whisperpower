@@ -14,3 +14,9 @@ rock_executable(power_whisperpower_ctl
     HEADERS
     DEPS power_whisperpower
     DEPS_PKGCONFIG canbus)
+
+rock_executable(power_whisperpower_pmg_ctl
+    SOURCES MainPMG.cpp
+    HEADERS
+    DEPS power_whisperpower
+    DEPS_PKGCONFIG canbus)
