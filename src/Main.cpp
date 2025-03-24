@@ -21,6 +21,7 @@ void usage(std::ostream& out) {
         << "\n"
         << "Available commands:\n"
         << "  info: general device info\n"
+        << "  dc-cube: read and display information about a DC Cube\n"
         << endl;
 }
 
