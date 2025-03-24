@@ -75,3 +75,20 @@ void PMGGenverter::resetFullUpdate()
     m_status.time = base::Time();
     m_has_full_update = false;
 }
+
+canbus::Message PMGGenverter::queryGeneratorRun()
+{
+    canbus::Message msg;
+    msg.can_id = 0x210;
+    msg.data[0] = 1;
+    msg.data[1] = 0;
+
+    if (m_run_ramp == 255) {
+        m_run_ramp = 0;
+    }
+    else {
+        ++m_run_ramp;
+    }
+    msg.data[7] = m_run_ramp;
+    return msg;
+}

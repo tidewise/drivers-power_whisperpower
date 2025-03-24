@@ -29,6 +29,13 @@ namespace power_whisperpower {
     public:
         PMGGenverter();
 
+        /** Process a single message from the bus */
+        void process(canbus::Message const& msg);
+
+        /** Returns the CAN message that enables the generator
+         */
+        canbus::Message queryGeneratorRun();
+
         /** The current known status
          *
          * The status is reset to unknown by \c resetFullUpdate
