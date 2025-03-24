@@ -18,7 +18,7 @@ namespace power_whisperpower {
         // Words from 0-3 respectively:
         float ac_voltage = base::unknown<float>();
         float ac_current = base::unknown<float>();
-        float engine_rpm = base::unknown<float>();
+        float engine_angular_speed = base::unknown<float>();
         base::Temperature inverter_temperature;
 
         // ID: 0x201 - Rate 50Hz
@@ -94,18 +94,18 @@ namespace power_whisperpower {
         // ID: 0x204 - Rate 25Hz
         // Words 0 and 3, bytes from 2-5
         string inverter_model = "";
-        float firmware_version = base::unknown<float>();
-        float firmware_subversion = base::unknown<float>();
-        float hardware_version = base::unknown<float>();
-        float hardware_subversion = base::unknown<float>();
+        uint8_t firmware_version = base::unknown<uint8_t>();
+        uint8_t firmware_subversion = base::unknown<uint8_t>();
+        uint8_t hardware_version = base::unknown<uint8_t>();
+        uint8_t hardware_subversion = base::unknown<uint8_t>();
         string inverter_serial_number = "";
 
         // ID: 0x205 - Rate 25Hz
-        // Words 0-3 
-        float total_hour_work = base::unknown<float>();
-        float total_minute_work = base::unknown<float>();
-        float maintenance_hour_work = base::unknown<float>();
-        float maintenance_minute_work = base::unknown<float>();
+        // Words 0-3
+        base::Time total_hour_work;
+        base::Time total_minute_work;
+        base::Time maintenance_hour_work;
+        base::Time maintenance_minute_work;
     };
 
     std::ostream& operator << (std::ostream& io, PMGGenverterStatus const& state);
