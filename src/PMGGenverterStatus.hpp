@@ -89,7 +89,7 @@ namespace power_whisperpower {
 
         // ID: 0x203 - Rate 50Hz
         // Byte 7 - Increasing ramp for presence
-        float TEST_ramp = base::unknown<float>();
+        uint8_t TEST_ramp = base::unknown<float>();
 
         // ID: 0x204 - Rate 25Hz
         // Words 0 and 3, bytes from 2-5
@@ -102,10 +102,8 @@ namespace power_whisperpower {
 
         // ID: 0x205 - Rate 25Hz
         // Words 0-3
-        base::Time total_hour_work;
-        base::Time total_minute_work;
-        base::Time maintenance_hour_work;
-        base::Time maintenance_minute_work;
+        base::Time total_work;
+        base::Time maintenance_work;
     };
 
     std::ostream& operator << (std::ostream& io, PMGGenverterStatus const& state);

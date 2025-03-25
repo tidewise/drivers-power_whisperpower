@@ -58,18 +58,44 @@ int main(int argc, char** argv)
             auto msg = can_device->read();
             wp_device.process(msg);
         }
+        wp_device.resetFullUpdate();
+
+        while (!wp_device.hasFullUpdate()) {
+            auto msg = can_device->read();
+            wp_device.process(msg);
+        }
 
         std::cout << wp_device.getStatus() << std::endl;
     }
     else if (cmd == "run") {
+        uint16_t init_counter = 0;
         while (true) {
-            auto msg = wp_device.queryGeneratorRun();
-            wp_device.process(msg);
+            while (true) {
+                auto msg = can_device->read();
+                wp_device.process(msg);
+                if (msg.can_id == 0x204 || msg.can_id == 0x205) {
+                    break;
+                }
+            }
 
-            std::this_thread::sleep_for(20ms);
+            std::this_thread::sleep_for(2ms);
+
+            if (init_counter > 1500) {
+                auto msg = wp_device.queryGeneratorCommand(false, true);
+                can_device->write(msg);
+            }
+            else if (init_counter > 15) {
+                auto msg = wp_device.queryGeneratorCommand(true, false);
+                can_device->write(msg);
+                ++init_counter;
+            }
+            else {
+                auto msg = wp_device.queryGeneratorCommand(false, false);
+                can_device->write(msg);
+                ++init_counter;
+            }
         }
     }
 
     return 0;
 }
-

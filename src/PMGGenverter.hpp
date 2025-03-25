@@ -32,9 +32,9 @@ namespace power_whisperpower {
         /** Process a single message from the bus */
         void process(canbus::Message const& msg);
 
-        /** Returns the CAN message that enables the generator
+        /** Returns the CAN message that enables or disables the generator
          */
-        canbus::Message queryGeneratorRun();
+        canbus::Message queryGeneratorCommand(bool start, bool stop);
 
         /** The current known status
          *

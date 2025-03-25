@@ -28,10 +28,10 @@ std::ostream& power_whisperpower::operator<<(std::ostream& io,
     io << "AC Current: " << state.ac_current << " A\n";
     io << "Engine angular speed: " << state.engine_angular_speed << " rad/s\n";
     io << "Temperature: " << state.inverter_temperature << "\n";
-    io << "Stepper: " << state.stepper << "CNT\n";
+    io << "Stepper: " << state.stepper << " CNT\n";
     io << "Oil Temperature: " << state.oil_temperature << "\n";
     io << "Delta DC Bus: " << state.delta_dc_bus << " CNT\n";
-    io << "PWM Scale: " << state.PWM_scale << "CNT\n";
+    io << "PWM Scale: " << state.PWM_scale << " CNT\n";
     io << "TEST Ramp: " << state.TEST_ramp << "\n";
     io << "Inverter Model: " << state.inverter_model << "\n";
     io << "Firmware Version: " << state.firmware_version << "\n";
@@ -39,10 +39,8 @@ std::ostream& power_whisperpower::operator<<(std::ostream& io,
     io << "Hardware Version: " << state.hardware_version << "\n";
     io << "Hardware Sub Version: " << state.hardware_subversion << "\n";
     io << "Inverter Serial Number: " << state.inverter_serial_number << "\n";
-    io << "Total Hour Work: " << state.total_hour_work << "\n";
-    io << "Total Minute Work: " << state.total_minute_work << "\n";
-    io << "Maintenance Hour Work: " << state.maintenance_hour_work << "\n";
-    io << "Maintenance Minute Work: " << state.maintenance_minute_work << "\n";
+    io << "Total Work: " << state.total_work << "\n";
+    io << "Maintenance Work: " << state.maintenance_work << "\n";
 
     return io;
 }
