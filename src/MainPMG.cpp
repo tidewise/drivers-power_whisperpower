@@ -59,12 +59,6 @@ int main(int argc, char** argv)
             wp_device.process(msg);
         }
         wp_device.resetFullUpdate();
-
-        while (!wp_device.hasFullUpdate()) {
-            auto msg = can_device->read();
-            wp_device.process(msg);
-        }
-
         std::cout << wp_device.getStatus() << std::endl;
     }
     else if (cmd == "run") {
