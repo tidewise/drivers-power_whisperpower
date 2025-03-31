@@ -82,23 +82,23 @@ namespace power_whisperpower {
 
         // ID: 0x202 - Rate 50Hz
         // Words 0-3 respectively:
-        float stepper = base::unknown<float>();
+        uint16_t stepper;
         base::Temperature oil_temperature;
-        float delta_dc_bus = base::unknown<float>();
-        float PWM_scale = base::unknown<float>();
+        uint16_t delta_dc_bus;
+        uint16_t PWM_scale;
 
         // ID: 0x203 - Rate 50Hz
         // Byte 7 - Increasing ramp for presence
-        uint8_t TEST_ramp = base::unknown<float>();
+        uint8_t TEST_ramp;
 
         // ID: 0x204 - Rate 25Hz
         // Words 0 and 3, bytes from 2-5
-        string inverter_model = "";
-        uint8_t firmware_version = base::unknown<uint8_t>();
-        uint8_t firmware_subversion = base::unknown<uint8_t>();
-        uint8_t hardware_version = base::unknown<uint8_t>();
-        uint8_t hardware_subversion = base::unknown<uint8_t>();
-        string inverter_serial_number = "";
+        uint16_t inverter_model;
+        uint8_t firmware_version;
+        uint8_t firmware_subversion;
+        uint8_t hardware_version;
+        uint8_t hardware_subversion;
+        uint16_t inverter_serial_number;
 
         // ID: 0x205 - Rate 25Hz
         // Words 0-3

@@ -28,26 +28,22 @@ void PMGGenverter::process(canbus::Message const& msg)
             m_status.engine_alarm = fromBigEndian<uint16_t>(msg.data + 6);
             break;
         case 0x202:
-            m_status.stepper = static_cast<float>(fromBigEndian<uint16_t>(msg.data));
+            m_status.stepper = fromBigEndian<uint16_t>(msg.data);
             m_status.oil_temperature = base::Temperature::fromCelsius(
                 fromBigEndian<uint16_t>(msg.data + 2) / 10.0);
-            m_status.delta_dc_bus =
-                static_cast<float>(fromBigEndian<uint16_t>(msg.data + 4));
-            m_status.PWM_scale =
-                static_cast<float>(fromBigEndian<uint16_t>(msg.data + 6));
+            m_status.delta_dc_bus = fromBigEndian<uint16_t>(msg.data + 4);
+            m_status.PWM_scale = fromBigEndian<uint16_t>(msg.data + 6);
             break;
         case 0x203:
             m_status.TEST_ramp = msg.data[7];
             break;
         case 0x204:
-            m_status.inverter_model =
-                std::string(1, msg.data[0]) + std::string(1, msg.data[1]);
-            m_status.firmware_version = static_cast<int>(msg.data[2]);
-            m_status.firmware_subversion = static_cast<int>(msg.data[3]);
-            m_status.hardware_version = static_cast<int>(msg.data[4]);
-            m_status.hardware_subversion = static_cast<int>(msg.data[5]);
-            m_status.inverter_serial_number =
-                std::string(1, msg.data[6]) + std::string(1, msg.data[7]);
+            m_status.inverter_model = fromBigEndian<uint16_t>(msg.data);
+            m_status.firmware_version = msg.data[2];
+            m_status.firmware_subversion = msg.data[3];
+            m_status.hardware_version = msg.data[4];
+            m_status.hardware_subversion = msg.data[5];
+            m_status.inverter_serial_number = fromBigEndian<uint16_t>(msg.data + 6);
             break;
         case 0x205:
             uint16_t total_hours = fromBigEndian<uint16_t>(msg.data);
@@ -92,7 +88,7 @@ canbus::Message PMGGenverter::queryGeneratorCommand(bool start, bool stop)
         msg.data[i] = 0;
     }
 
-    m_run_ramp = (m_run_ramp + 1) % 256;
+    m_run_ramp += 1;
     msg.data[7] = m_run_ramp;
 
     return msg;
