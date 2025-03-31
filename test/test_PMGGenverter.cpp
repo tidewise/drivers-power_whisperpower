@@ -102,7 +102,7 @@ TEST_F(PMGGenverterTest, it_processes_message_204)
 {
     msg.can_id = 0x204;
     // Inverter model
-    msg.data[0] = 0x49; 
+    msg.data[0] = 0x49;
     msg.data[1] = 0x4D;
     // Firmware version
     msg.data[2] = 0x01;
@@ -117,12 +117,31 @@ TEST_F(PMGGenverterTest, it_processes_message_204)
     genverter.process(msg);
     PMGGenverterStatus status = genverter.getStatus();
 
-    ASSERT_EQ(status.inverter_model, "IM");
+    ASSERT_EQ(status.inverter_model, 0x494D);
     ASSERT_EQ(status.firmware_version, 0x01);
     ASSERT_EQ(status.firmware_subversion, 0x00);
     ASSERT_EQ(status.hardware_version, 0x03);
     ASSERT_EQ(status.hardware_subversion, 0x00);
-    ASSERT_EQ(status.inverter_serial_number, "SN");
+    ASSERT_EQ(status.inverter_serial_number, 0x534E);
+}
+
+TEST_F(PMGGenverterTest, it_correctly_displays_firmware_and_hardware_versions_as_ints)
+{
+    msg.can_id = 0x204;
+    // Firmware version
+    msg.data[2] = 0x04;
+    msg.data[3] = 0x02;
+    // Hardware version
+    msg.data[4] = 0x06;
+    msg.data[5] = 0x09;
+
+    genverter.process(msg);
+    PMGGenverterStatus status = genverter.getStatus();
+
+    ASSERT_EQ(static_cast<int>(status.firmware_version), 4);
+    ASSERT_EQ(static_cast<int>(status.firmware_subversion), 2);
+    ASSERT_EQ(static_cast<int>(status.hardware_version), 6);
+    ASSERT_EQ(static_cast<int>(status.hardware_subversion), 9);
 }
 
 TEST_F(PMGGenverterTest, it_processes_message_205)
