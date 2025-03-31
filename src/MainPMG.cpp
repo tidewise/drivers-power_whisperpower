@@ -74,11 +74,7 @@ int main(int argc, char** argv)
 
             std::this_thread::sleep_for(2ms);
 
-            if (init_counter > 1500) {
-                auto msg = wp_device.queryGeneratorCommand(false, true);
-                can_device->write(msg);
-            }
-            else if (init_counter > 15) {
+            if (init_counter > 15) {
                 auto msg = wp_device.queryGeneratorCommand(true, false);
                 can_device->write(msg);
                 ++init_counter;
