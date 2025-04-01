@@ -32,10 +32,10 @@ void PMGGenverter::process(canbus::Message const& msg)
             m_status.oil_temperature = base::Temperature::fromCelsius(
                 fromBigEndian<uint16_t>(msg.data + 2) / 10.0);
             m_status.delta_dc_bus = fromBigEndian<uint16_t>(msg.data + 4);
-            m_status.PWM_scale = fromBigEndian<uint16_t>(msg.data + 6);
+            m_status.pwm_scale = fromBigEndian<uint16_t>(msg.data + 6);
             break;
         case 0x203:
-            m_status.TEST_ramp = msg.data[7];
+            m_status.test_ramp = msg.data[7];
             break;
         case 0x204:
             m_status.inverter_model = fromBigEndian<uint16_t>(msg.data);

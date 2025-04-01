@@ -85,11 +85,11 @@ namespace power_whisperpower {
         uint16_t stepper;
         base::Temperature oil_temperature;
         uint16_t delta_dc_bus;
-        uint16_t PWM_scale;
+        uint16_t pwm_scale;
 
         // ID: 0x203 - Rate 50Hz
         // Byte 7 - Increasing ramp for presence
-        uint8_t TEST_ramp;
+        uint8_t test_ramp;
 
         // ID: 0x204 - Rate 25Hz
         // Words 0 and 3, bytes from 2-5

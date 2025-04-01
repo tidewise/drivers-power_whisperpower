@@ -84,7 +84,7 @@ TEST_F(PMGGenverterTest, it_processes_message_202)
     ASSERT_EQ(status.stepper, 500);
     ASSERT_EQ(status.oil_temperature.getCelsius(), 85);
     ASSERT_EQ(status.delta_dc_bus, 246);
-    ASSERT_EQ(status.PWM_scale, 5);
+    ASSERT_EQ(status.pwm_scale, 5);
 }
 
 TEST_F(PMGGenverterTest, it_processes_message_203)
@@ -95,7 +95,7 @@ TEST_F(PMGGenverterTest, it_processes_message_203)
     genverter.process(msg);
     PMGGenverterStatus status = genverter.getStatus();
 
-    ASSERT_EQ(status.TEST_ramp, 16);
+    ASSERT_EQ(status.test_ramp, 16);
 }
 
 TEST_F(PMGGenverterTest, it_processes_message_204)

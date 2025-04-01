@@ -31,8 +31,8 @@ std::ostream& power_whisperpower::operator<<(std::ostream& io,
     io << "Stepper: " << state.stepper << " CNT\n";
     io << "Oil Temperature: " << state.oil_temperature << "\n";
     io << "Delta DC Bus: " << state.delta_dc_bus << " CNT\n";
-    io << "PWM Scale: " << state.PWM_scale << " CNT\n";
-    io << "TEST Ramp: " << state.TEST_ramp << "\n";
+    io << "PWM Scale: " << state.pwm_scale << " CNT\n";
+    io << "TEST Ramp: " << state.test_ramp << "\n";
     io << "Inverter Model: " << state.inverter_model << "\n";
     io << "Firmware Version: " << static_cast<int>(state.firmware_version) << "\n";
     io << "Firmware Sub Version: " << static_cast<int>(state.firmware_subversion) << "\n";
