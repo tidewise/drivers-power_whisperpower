@@ -79,6 +79,7 @@ void PMGGenverter::resetFullUpdate()
 canbus::Message PMGGenverter::queryGeneratorCommand(bool start, bool stop)
 {
     canbus::Message msg;
+    msg.time = base::Time::now();
     msg.can_id = 0x210;
     msg.size = 8;
     msg.data[0] = start;
