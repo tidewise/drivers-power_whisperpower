@@ -39,8 +39,6 @@ std::ostream& power_whisperpower::operator<<(std::ostream& io,
     io << "Hardware Version: " << static_cast<int>(state.hardware_version) << "\n";
     io << "Hardware Sub Version: " << static_cast<int>(state.hardware_subversion) << "\n";
     io << "Inverter Serial Number: " << state.inverter_serial_number << "\n";
-    io << "Total Work: " << state.total_work << "\n";
-    io << "Maintenance Work: " << state.maintenance_work << "\n";
 
     return io;
 }

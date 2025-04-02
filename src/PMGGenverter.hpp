@@ -3,13 +3,14 @@
 
 #include <power_whisperpower/Device.hpp>
 #include <power_whisperpower/PMGGenverterStatus.hpp>
+#include <power_whisperpower/RunTimeState.hpp>
 
 namespace power_whisperpower {
     /** Driver for the WhisperPower WP-PMG Genverter
      *
      * Behaves similarly to Smart Shunts which are connected through a CAN bus.
-     * Use one CANdriver from Rock's drivers/canbus (or elsewhere) to receive/transmit messages
-     * from the bus
+     * Use one CANdriver from Rock's drivers/canbus (or elsewhere) to receive/transmit
+     * messages from the bus
      *
      * The main functionality of this driver is to interpret the suite of CAN
      * messages that form the Genverter status update. The pattern is to call
@@ -23,6 +24,7 @@ namespace power_whisperpower {
         typedef PMGGenverterStatus Status;
 
         Status m_status;
+        RunTimeState m_run_time_state;
         bool m_has_full_update = false;
         uint8_t m_run_ramp = 0;
 
@@ -41,6 +43,10 @@ namespace power_whisperpower {
          * The status is reset to unknown by \c resetFullUpdate
          */
         PMGGenverterStatus getStatus() const;
+
+        /** The current known runtime state
+         */
+        RunTimeState getRunTimeState() const;
 
         /** Check if a full update to the smart shunt status has been received
          *

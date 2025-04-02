@@ -161,10 +161,10 @@ TEST_F(PMGGenverterTest, it_processes_message_205)
     msg.data[7] = 0x00;
 
     genverter.process(msg);
-    PMGGenverterStatus status = genverter.getStatus();
+    RunTimeState runtime_state = genverter.getRunTimeState();
 
-    ASSERT_EQ(status.total_work.toSeconds(), 36000);
-    ASSERT_EQ(status.maintenance_work.toSeconds(), 18000);
+    ASSERT_EQ(runtime_state.total_work.toSeconds(), 36000);
+    ASSERT_EQ(runtime_state.maintenance_work.toSeconds(), 18000);
     ASSERT_TRUE(genverter.hasFullUpdate());
 }
 

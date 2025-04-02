@@ -50,9 +50,10 @@ void PMGGenverter::process(canbus::Message const& msg)
             uint16_t total_minutes = fromBigEndian<uint16_t>(msg.data + 2);
             uint16_t maintenance_hours = fromBigEndian<uint16_t>(msg.data + 4);
             uint16_t maintenance_minutes = fromBigEndian<uint16_t>(msg.data + 6);
-            m_status.total_work =
+            m_run_time_state.time = base::Time::now();
+            m_run_time_state.total_work =
                 base::Time::fromSeconds((total_hours * 3600) + (total_minutes * 60));
-            m_status.maintenance_work = base::Time::fromSeconds(
+            m_run_time_state.maintenance_work = base::Time::fromSeconds(
                 (maintenance_hours * 3600) + (maintenance_minutes * 60));
             m_has_full_update = true;
             break;
@@ -62,6 +63,11 @@ void PMGGenverter::process(canbus::Message const& msg)
 PMGGenverterStatus PMGGenverter::getStatus() const
 {
     return m_status;
+}
+
+RunTimeState PMGGenverter::getRunTimeState() const
+{
+    return m_run_time_state;
 }
 
 bool PMGGenverter::hasFullUpdate() const

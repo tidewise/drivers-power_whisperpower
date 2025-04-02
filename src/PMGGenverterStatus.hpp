@@ -9,7 +9,7 @@
 using namespace std;
 
 namespace power_whisperpower {
-    /** Standard Smart Shunt status data
+    /** Standard Genverter status data
      */
     struct PMGGenverterStatus {
         base::Time time;
@@ -99,11 +99,6 @@ namespace power_whisperpower {
         uint8_t hardware_version;
         uint8_t hardware_subversion;
         uint16_t inverter_serial_number;
-
-        // ID: 0x205 - Rate 25Hz
-        // Words 0-3
-        base::Time total_work;
-        base::Time maintenance_work;
     };
 
     std::ostream& operator << (std::ostream& io, PMGGenverterStatus const& state);
