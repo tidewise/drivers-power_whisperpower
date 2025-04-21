@@ -6,7 +6,7 @@ rock_library(power_whisperpower
     HEADERS Device.hpp Protocol.hpp
             DCPowerCube.hpp DCPowerCubeStatus.hpp DCPowerCubeConfig.hpp
             PMGGenverter.hpp PMGGenverterStatus.hpp RunTimeState.hpp
-            SmartShunt.hpp SmartShuntStatus.hpp
+            SmartShunt.hpp SmartShuntStatus.hpp GensetState.hpp
     DEPS_PKGCONFIG base-types canbus)
 
 rock_executable(power_whisperpower_ctl
