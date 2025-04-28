@@ -16,12 +16,13 @@ namespace power_whisperpower {
          *
          */
         enum Stage {
+            GENSET_STAGE_UNKNOWN,
             GENSET_STAGE_RUNNING,
             GENSET_STAGE_STOPPED,
             GENSET_STAGE_STOPPING,
             GENSET_STAGE_STARTING
         };
-        Stage stage;
+        Stage stage{GENSET_STAGE_UNKNOWN};
         /**
          * @brief Indicates when there is a failure in the genset
          *
