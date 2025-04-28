@@ -1,12 +1,16 @@
 #ifndef POWER_WHISPERPOWER_GENSETSTATE_HPP
 #define POWER_WHISPERPOWER_GENSETSTATE_HPP
 
+#include <base/Time.hpp>
+
 namespace power_whisperpower {
     /**
      * @brief The state of the WhisperPower genset
      *
      */
     struct GensetState {
+        base::Time time;
+
         /**
          * @brief The operation stage of the genset
          *
