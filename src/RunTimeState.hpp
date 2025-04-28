@@ -13,9 +13,9 @@ namespace power_whisperpower {
         base::Time time;
 
         /** The run time since the last maintenance */
-        base::Time total_run_time;
+        base::Time since_last_maintenance;
         /** The run time since commissioning of the generator */
-        base::Time historical_run_time;
+        base::Time total;
     };
 
     std::ostream& operator<<(std::ostream& io, RunTimeState const& state);
