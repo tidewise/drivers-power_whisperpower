@@ -12,10 +12,10 @@ namespace power_whisperpower {
     struct RunTimeState {
         base::Time time;
 
-        // ID: 0x205 - Rate 25Hz
-        // Words 0-3
-        base::Time total_work;
-        base::Time maintenance_work;
+        /** The run time since the last maintenance */
+        base::Time since_last_maintenance;
+        /** The run time since commissioning of the generator */
+        base::Time total;
     };
 
     std::ostream& operator<<(std::ostream& io, RunTimeState const& state);

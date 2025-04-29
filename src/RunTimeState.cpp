@@ -8,8 +8,8 @@ std::ostream& power_whisperpower::operator<<(std::ostream& io,
     power_whisperpower::RunTimeState const& state)
 {
     io << "Time: " << state.time << "\n";
-    io << "Total Work: " << state.total_work << "\n";
-    io << "Maintenance Work: " << state.maintenance_work << "\n";
+    io << "Run time since last maintenance" << state.since_last_maintenance << "\n";
+    io << "Run time since commissioning" << state.total << "\n";
 
     return io;
 }
