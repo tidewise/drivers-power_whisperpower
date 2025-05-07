@@ -21,6 +21,8 @@ void usage(std::ostream& out) {
         << "\n"
         << "Available commands:\n"
         << "  info: general device info\n"
+        << "  dc-cube: device status and configuration state\n"
+        << "  set-id: change device id\n"
         << endl;
 }
 
@@ -96,7 +98,7 @@ int main(int argc, char** argv)
         }
         std::cout << wp_device.getConfig() << std::endl;
     }
-    else if (cmd == "set_id") {
+    else if (cmd == "set-id") {
         if (argc != 7)
         {
             std::cerr << "wrong number of arguments" << std::endl;
