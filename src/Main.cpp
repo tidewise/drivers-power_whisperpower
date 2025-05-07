@@ -22,6 +22,8 @@ void usage(std::ostream& out) {
         << "Available commands:\n"
         << "  info: general device info\n"
         << "  dc-cube: read and display information about a DC Cube\n"
+        << "  set-id: change device id. For this CMD the field DEVICE_ID should be \n"
+        << "    replaced by NEW_DEVICE_ID.\n"
         << endl;
 }
 
@@ -97,18 +99,13 @@ int main(int argc, char** argv)
         }
         std::cout << wp_device.getConfig() << std::endl;
     }
-    else if (cmd == "set_id") {
-        if (argc != 7)
-        {
-            std::cerr << "wrong number of arguments" << std::endl;
-        }
-        power_whisperpower::Device device(device_group, device_id);
+    else if (cmd == "set-id") {
+        power_whisperpower::Device device(device_group, 0x600);
         waitResult(*can_device, device, device.querySerialNumber());
         uint32_t serial_number = device.getSerialNumber();
-        int device_new_id(std::stoi(argv[6]));
-        waitResult(*can_device, device, device.querySetId(0x600, serial_number));
+        int device_new_id(std::stoi(argv[5]));
+        waitResult(*can_device, device, device.querySetId(device_new_id, serial_number));
 
-        // TODO: get the actual returned id
         std::cout << "New device Id: " << device_new_id << std::endl;
     }
 
