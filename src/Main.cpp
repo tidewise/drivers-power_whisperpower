@@ -22,8 +22,10 @@ void usage(std::ostream& out) {
         << "Available commands:\n"
         << "  info: general device info\n"
         << "  dc-cube: read and display information about a DC Cube\n"
-        << "  set-id: change device id. For this CMD the field DEVICE_ID should be \n"
-        << "    replaced by NEW_DEVICE_ID.\n"
+        << "  set-id: change device id for all WhisperConnect devices on the bus.\n"
+        << "    For this command, DEVICE_ID should be the new desired ID\n"
+        << "    Note that it changes the ID of ALL devices on the bus. Make sure\n"
+        << "    you are connected to only one\n"
         << endl;
 }
 
@@ -107,13 +109,19 @@ int main(int argc, char** argv)
         std::cout << wp_device.getConfig() << std::endl;
     }
     else if (cmd == "set-id") {
-        power_whisperpower::Device device(device_group, 0x600);
-        waitResult(*can_device, device, device.querySerialNumber());
-        uint32_t serial_number = device.getSerialNumber();
-        int device_new_id(std::stoi(argv[5]));
-        waitResult(*can_device, device, device.querySetId(device_new_id, serial_number));
+        string str;
+        std::cout
+            << "WARNING: this will change the node ID of ALL devices\n"
+            << "WARNING: on the bus to " << device_id << "\n"
+            << "\n"
+            << "Write yes and press ENTER to continue" << std::endl;
+        std::cin >> str;
+        if (str != "yes") {
+            std::cerr << "Aborting" << std::endl;
+            return 1;
+        }
 
-        std::cout << "New device Id: " << device_new_id << std::endl;
+        can_device->write(Device::querySetId(device_id));
     }
 
     return 0;
