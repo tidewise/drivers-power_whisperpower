@@ -72,6 +72,10 @@ int main(int argc, char** argv)
     unique_ptr<canbus::Driver> can_device(
         canbus::openCanDevice(can_device_name, can_device_type)
     );
+    if (!can_device) {
+        std::cerr << "could not open CAN device" << std::endl;
+        return 1;
+    }
     can_device->setReadTimeout(10000);
 
     if (cmd == "info") {
