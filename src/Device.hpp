@@ -48,6 +48,7 @@ namespace power_whisperpower {
         static const int OID_SOFTWARE_VERSION = 0x100A;
         static const int OID_SERIAL_NUMBER = 0x1018;
         static const int OID_TRANSMIT_PERIOD = 0x9100;
+        static const int OID_CAN_ID = 0x9200;
 
     protected:
         virtual void processRead(
@@ -59,6 +60,16 @@ namespace power_whisperpower {
         virtual ~Device();
 
         bool isWaiting() const;
+
+        /** Create a CAN message that will change a whisperconnect node ID
+         *
+         * Note that the device MUST BE the only device connected. This uses a broadcast
+         * address, so *all* devices on the bus will have the new ID
+         *
+         * @param id the new node ID. It has to be the complete ID, that is 0x31 for a
+         *    DC cube with iD 1
+         */
+        static canbus::Message querySetId(uint8_t id);
 
         /** How long we have been waiting for a specific reply from the device
          */

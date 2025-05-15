@@ -22,6 +22,10 @@ void usage(std::ostream& out) {
         << "Available commands:\n"
         << "  info: general device info\n"
         << "  dc-cube: read and display information about a DC Cube\n"
+        << "  set-id: change device id for all WhisperConnect devices on the bus.\n"
+        << "    For this command, DEVICE_ID should be the new desired ID\n"
+        << "    Note that it changes the ID of ALL devices on the bus. Make sure\n"
+        << "    you are connected to only one\n"
         << endl;
 }
 
@@ -39,7 +43,10 @@ protocol::NodeIDGroups deviceGroupFromString(string name) {
         return protocol::NODE_GROUP_INVERTER;
     }
     else {
-        throw std::invalid_argument("unknown group name '" + name + "'");
+        throw std::invalid_argument(
+            "unknown group name '" + name + "', expected one of battery_monitor, "
+            "generator, charger or inverter"
+        );
     }
 }
 
@@ -67,6 +74,10 @@ int main(int argc, char** argv)
     unique_ptr<canbus::Driver> can_device(
         canbus::openCanDevice(can_device_name, can_device_type)
     );
+    if (!can_device) {
+        std::cerr << "could not open CAN device" << std::endl;
+        return 1;
+    }
     can_device->setReadTimeout(10000);
 
     if (cmd == "info") {
@@ -96,6 +107,21 @@ int main(int argc, char** argv)
             waitResult(*can_device, wp_device, wp_device.queryRead(msg_id));
         }
         std::cout << wp_device.getConfig() << std::endl;
+    }
+    else if (cmd == "set-id") {
+        string str;
+        std::cout
+            << "WARNING: this will change the node ID of ALL devices\n"
+            << "WARNING: on the bus to " << device_id << "\n"
+            << "\n"
+            << "Write yes and press ENTER to continue" << std::endl;
+        std::cin >> str;
+        if (str != "yes") {
+            std::cerr << "Aborting" << std::endl;
+            return 1;
+        }
+
+        can_device->write(Device::querySetId(device_id));
     }
 
     return 0;
