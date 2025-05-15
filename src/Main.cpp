@@ -41,7 +41,10 @@ protocol::NodeIDGroups deviceGroupFromString(string name) {
         return protocol::NODE_GROUP_INVERTER;
     }
     else {
-        throw std::invalid_argument("unknown group name '" + name + "'");
+        throw std::invalid_argument(
+            "unknown group name '" + name + "', expected one of battery_monitor, "
+            "generator, charger or inverter"
+        );
     }
 }
 
