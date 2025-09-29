@@ -46,7 +46,7 @@ canbus::Message Device::querySetId(uint8_t id) {
     canbus::Message message;
     message.can_id = 0x600;
     message.size = 8;
-    message.data[0] = 0x40;
+    message.data[0] = 0x23;
     message.data[1] = 0x92;
     message.data[2] = 0x00;
     message.data[3] = id;
