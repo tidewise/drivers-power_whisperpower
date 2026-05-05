@@ -43,13 +43,12 @@ TEST_F(PMGGenverterTest, it_processes_message_201)
     msg.data[0] = 0x00;
     msg.data[1] = PMGGenverterStatus::Status::GENERATION_ENABLED |
                   PMGGenverterStatus::Status::ENGINE_ENABLED;
-    msg.data[2] = 0x00;
+    msg.data[2] = (PMGGenverterStatus::InverterAlarm::RPM_OVER_SPEED >> 8);
     msg.data[3] = PMGGenverterStatus::InverterAlarm::AC_OVER_LOAD |
                   PMGGenverterStatus::InverterAlarm::OVER_TEMPERATURE;
     msg.data[4] = 0x00;
     msg.data[5] = PMGGenverterStatus::InverterWarning::HIGH_RPM;
-    msg.data[6] =
-        0x00 | (PMGGenverterStatus::EngineAlarm::INVERTER_COMMUNICATION_ERROR >> 8);
+    msg.data[6] = PMGGenverterStatus::EngineAlarm::INVERTER_COMMUNICATION_ERROR >> 8;
     msg.data[7] = PMGGenverterStatus::EngineAlarm::OIL_PRESSURE |
                   PMGGenverterStatus::EngineAlarm::EXHAUST_TEMPERATURE;
 
@@ -57,9 +56,9 @@ TEST_F(PMGGenverterTest, it_processes_message_201)
     PMGGenverterStatus status = genverter.getStatus();
 
     ASSERT_EQ(status.status, 0x5);
-    ASSERT_EQ(status.inverter_alarm, 0xA);
+    ASSERT_EQ(status.inverter_alarm, 0x10A);
     ASSERT_EQ(status.inverter_warning, 0x2);
-    ASSERT_EQ(status.engine_alarm, 0x9);
+    ASSERT_EQ(status.engine_alarm, 0x109);
 }
 
 TEST_F(PMGGenverterTest, it_processes_message_202)
