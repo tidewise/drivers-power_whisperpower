@@ -6,6 +6,11 @@
 #include <power_whisperpower/RunTimeState.hpp>
 
 namespace power_whisperpower {
+    enum PMGGenverterProtocol {
+        CAN_PROTOCOL,
+        WHISPER_CONNECT
+    };
+
     /** Driver for the WhisperPower WP-PMG Genverter
      *
      * Behaves similarly to Smart Shunts which are connected through a CAN bus.
@@ -27,9 +32,15 @@ namespace power_whisperpower {
         RunTimeState m_run_time_state;
         bool m_has_full_update = false;
         uint8_t m_run_ramp = 0;
+        PMGGenverterProtocol m_protocol;
+
+        void parseWhisperConnect(canbus::Message const& msg);
+        void parseCanProtocol(canbus::Message const& msg);
+        canbus::Message queryGeneratorCommandWhisperConnect(bool start, bool stop);
+        canbus::Message queryGeneratorCommandCanProtocol(bool start, bool stop);
 
     public:
-        PMGGenverter();
+        PMGGenverter(PMGGenverterProtocol const& protocol = CAN_PROTOCOL);
 
         /** Process a single message from the bus */
         void process(canbus::Message const& msg);

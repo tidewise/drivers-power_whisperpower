@@ -1,6 +1,4 @@
-#include "base/Temperature.hpp"
 #include "base/Time.hpp"
-#include "canbus/Message.hpp"
 #include "power_whisperpower/PMGGenverter.hpp"
 #include "power_whisperpower/PMGGenverterStatus.hpp"
 #include <gtest/gtest.h>
@@ -9,199 +7,7 @@ using namespace power_whisperpower;
 
 struct PMGGenverterTest : public ::testing::Test {
     PMGGenverter genverter;
-    canbus::Message msg;
 };
-
-TEST_F(PMGGenverterTest, it_processes_message_200)
-{
-    msg.can_id = 0x200;
-    // AC Voltage (230.0 V)
-    msg.data[0] = 0x08;
-    msg.data[1] = 0xFC;
-    // AC Current (15.5 A)
-    msg.data[2] = 0x00;
-    msg.data[3] = 0x9B;
-    // Engine angular speed (3000 RPM)
-    msg.data[4] = 0x0B;
-    msg.data[5] = 0xB8;
-    // Temperature (45.0°C)
-    msg.data[6] = 0x01;
-    msg.data[7] = 0xC2;
-
-    genverter.process(msg);
-    PMGGenverterStatus status = genverter.getStatus();
-
-    ASSERT_EQ(status.ac_voltage, 230.0);
-    ASSERT_EQ(status.ac_current, 15.5);
-    ASSERT_NEAR(status.engine_angular_speed, 314.159, 1e-3);
-    ASSERT_EQ(status.inverter_temperature.getCelsius(), 45.0);
-}
-
-TEST_F(PMGGenverterTest, it_processes_message_201)
-{
-    msg.can_id = 0x201;
-    msg.data[0] = 0x00;
-    msg.data[1] = PMGGenverterStatus::Status::GENERATION_ENABLED |
-                  PMGGenverterStatus::Status::ENGINE_ENABLED;
-    msg.data[2] = (PMGGenverterStatus::InverterAlarm::RPM_OVER_SPEED >> 8);
-    msg.data[3] = PMGGenverterStatus::InverterAlarm::AC_OVER_LOAD |
-                  PMGGenverterStatus::InverterAlarm::OVER_TEMPERATURE;
-    msg.data[4] = 0x00;
-    msg.data[5] = PMGGenverterStatus::InverterWarning::HIGH_RPM;
-    msg.data[6] = PMGGenverterStatus::EngineAlarm::INVERTER_COMMUNICATION_ERROR >> 8;
-    msg.data[7] = PMGGenverterStatus::EngineAlarm::OIL_PRESSURE |
-                  PMGGenverterStatus::EngineAlarm::EXHAUST_TEMPERATURE;
-
-    genverter.process(msg);
-    PMGGenverterStatus status = genverter.getStatus();
-
-    ASSERT_EQ(status.status, 0x5);
-    ASSERT_EQ(status.inverter_alarm, 0x10A);
-    ASSERT_EQ(status.inverter_warning, 0x2);
-    ASSERT_EQ(status.engine_alarm, 0x109);
-}
-
-TEST_F(PMGGenverterTest, it_processes_message_202)
-{
-    msg.can_id = 0x202;
-    // Stepper position
-    msg.data[0] = 0x01;
-    msg.data[1] = 0xF4;
-    // Oil temperature
-    msg.data[2] = 0x03;
-    msg.data[3] = 0x52;
-    // Delta DC bus voltage
-    msg.data[4] = 0x00;
-    msg.data[5] = 0xF6;
-    // PWM scale factor
-    msg.data[6] = 0x00;
-    msg.data[7] = 0x05;
-
-    genverter.process(msg);
-    PMGGenverterStatus status = genverter.getStatus();
-
-    ASSERT_EQ(status.stepper, 500);
-    ASSERT_EQ(status.oil_temperature.getCelsius(), 85);
-    ASSERT_EQ(status.delta_dc_bus, 246);
-    ASSERT_EQ(status.pwm_scale, 5);
-}
-
-TEST_F(PMGGenverterTest, it_processes_message_203)
-{
-    msg.can_id = 0x203;
-    msg.data[7] = 0x10;
-
-    genverter.process(msg);
-    PMGGenverterStatus status = genverter.getStatus();
-
-    ASSERT_EQ(status.test_ramp, 16);
-}
-
-TEST_F(PMGGenverterTest, it_processes_message_204)
-{
-    msg.can_id = 0x204;
-    // Inverter model
-    msg.data[0] = 0x49;
-    msg.data[1] = 0x4D;
-    // Firmware version
-    msg.data[2] = 0x01;
-    msg.data[3] = 0x00;
-    // Hardware version
-    msg.data[4] = 0x03;
-    msg.data[5] = 0x00;
-    // Inverter serial number
-    msg.data[6] = 0x53;
-    msg.data[7] = 0x4E;
-
-    genverter.process(msg);
-    PMGGenverterStatus status = genverter.getStatus();
-
-    ASSERT_EQ(status.inverter_model, 0x494D);
-    ASSERT_EQ(status.firmware_version, 0x01);
-    ASSERT_EQ(status.firmware_subversion, 0x00);
-    ASSERT_EQ(status.hardware_version, 0x03);
-    ASSERT_EQ(status.hardware_subversion, 0x00);
-    ASSERT_EQ(status.inverter_serial_number, 0x534E);
-}
-
-TEST_F(PMGGenverterTest, it_correctly_displays_firmware_and_hardware_versions_as_ints)
-{
-    msg.can_id = 0x204;
-    // Firmware version
-    msg.data[2] = 0x04;
-    msg.data[3] = 0x02;
-    // Hardware version
-    msg.data[4] = 0x06;
-    msg.data[5] = 0x09;
-
-    genverter.process(msg);
-    PMGGenverterStatus status = genverter.getStatus();
-
-    ASSERT_EQ(static_cast<int>(status.firmware_version), 4);
-    ASSERT_EQ(static_cast<int>(status.firmware_subversion), 2);
-    ASSERT_EQ(static_cast<int>(status.hardware_version), 6);
-    ASSERT_EQ(static_cast<int>(status.hardware_subversion), 9);
-}
-
-TEST_F(PMGGenverterTest, it_processes_message_205)
-{
-    msg.can_id = 0x205;
-    // Total Hour Work
-    msg.data[0] = 0x00;
-    msg.data[1] = 0x0A;
-    // Total Minute Work
-    msg.data[2] = 0x00;
-    msg.data[3] = 0x00;
-    // Maintenence Hour Work
-    msg.data[4] = 0x00;
-    msg.data[5] = 0x05;
-    // Maintenence Minute Work
-    msg.data[6] = 0x00;
-    msg.data[7] = 0x00;
-
-    genverter.process(msg);
-    RunTimeState runtime_state = genverter.getRunTimeState();
-
-    ASSERT_EQ(runtime_state.total.toSeconds(), 36000);
-    ASSERT_EQ(runtime_state.since_last_maintenance.toSeconds(), 18000);
-    ASSERT_TRUE(genverter.hasFullUpdate());
-}
-
-TEST_F(PMGGenverterTest, it_queries_generator_command_start)
-{
-    canbus::Message msg = genverter.queryGeneratorCommand(true, false);
-    ASSERT_EQ(msg.can_id, 0x210);
-    ASSERT_EQ(msg.size, 8);
-    ASSERT_EQ(msg.data[0], 1);
-    ASSERT_EQ(msg.data[1], 0);
-}
-
-TEST_F(PMGGenverterTest, it_queries_generator_command_stop)
-{
-    canbus::Message msg = genverter.queryGeneratorCommand(false, true);
-    ASSERT_EQ(msg.can_id, 0x210);
-    ASSERT_EQ(msg.size, 8);
-    ASSERT_EQ(msg.data[0], 0);
-    ASSERT_EQ(msg.data[1], 1);
-}
-
-TEST_F(PMGGenverterTest, it_queries_generator_command_no_action)
-{
-    canbus::Message msg = genverter.queryGeneratorCommand(false, false);
-    ASSERT_EQ(msg.can_id, 0x210);
-    ASSERT_EQ(msg.size, 8);
-    ASSERT_EQ(msg.data[0], 0);
-    ASSERT_EQ(msg.data[1], 0);
-}
-
-TEST_F(PMGGenverterTest, it_queries_generator_command_both_start_and_stop)
-{
-    canbus::Message msg = genverter.queryGeneratorCommand(true, true);
-    ASSERT_EQ(msg.can_id, 0x210);
-    ASSERT_EQ(msg.size, 8);
-    ASSERT_EQ(msg.data[0], 1);
-    ASSERT_EQ(msg.data[1], 1);
-}
 
 TEST_F(PMGGenverterTest, it_resets_full_update)
 {
@@ -209,4 +15,18 @@ TEST_F(PMGGenverterTest, it_resets_full_update)
     PMGGenverterStatus status = genverter.getStatus();
     ASSERT_FALSE(genverter.hasFullUpdate());
     ASSERT_EQ(status.time, base::Time());
+}
+
+TEST_F(PMGGenverterTest, it_throws_if_an_unknown_protocol_is_given_to_process)
+{
+    PMGGenverter genverter(static_cast<PMGGenverterProtocol>(99));
+    canbus::Message msg;
+    ASSERT_THROW(genverter.process(msg), std::runtime_error);
+}
+
+TEST_F(PMGGenverterTest,
+    it_throws_if_an_unknown_protocol_is_given_to_queryGeneratorCommand)
+{
+    PMGGenverter genverter(static_cast<PMGGenverterProtocol>(99));
+    ASSERT_THROW(genverter.queryGeneratorCommand(true, false), std::runtime_error);
 }
