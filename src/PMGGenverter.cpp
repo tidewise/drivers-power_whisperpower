@@ -4,7 +4,7 @@
 using namespace power_whisperpower;
 using namespace power_whisperpower::protocol;
 
-PMGGenverter::PMGGenverter(PMGGenverterProtocol const& protocol)
+PMGGenverter::PMGGenverter(PMGGenverterProtocol protocol)
     : m_protocol(protocol)
 {
 }

@@ -22,6 +22,10 @@ void usage(std::ostream& out)
         << "Available commands:\n"
         << "  info: display information sent by the genverter\n"
         << "  run: run the generator\n"
+        << "  start: start the generator (only for whisper_connect)\n"
+        << "  stop: stop the generator (only for whisper_connect)\n"
+        << "  persistent_start: start the generator sending 10 messages with 20ms delay "
+           "(only for whisper_connect)\n"
         << endl;
 }
 
@@ -57,9 +61,11 @@ int main(int argc, char** argv)
     PMGGenverterProtocol pmg_protocol = CAN_PROTOCOL;
     if (protocol == "whisper_connect") {
         pmg_protocol = WHISPER_CONNECT;
-    } else if (protocol == "can_protocol") {
+    }
+    else if (protocol == "can_protocol") {
         pmg_protocol = CAN_PROTOCOL;
-    } else {
+    }
+    else {
         std::cerr << "Unknown protocol " << protocol << std::endl;
         return 1;
     }
@@ -73,6 +79,28 @@ int main(int argc, char** argv)
         }
         wp_device.resetFullUpdate();
         std::cout << wp_device.getStatus() << std::endl;
+    }
+    else if (cmd == "start" || cmd == "stop") {
+        if (pmg_protocol != WHISPER_CONNECT) {
+            std::cerr << "Command " << cmd << " is not implemented for this protocol"
+                      << std::endl;
+            return 1;
+        }
+        bool start = (cmd == "start");
+        auto msg = wp_device.queryGeneratorCommand(start, !start);
+        can_device->write(msg);
+    }
+    else if (cmd == "persistent_start") {
+        if (pmg_protocol != WHISPER_CONNECT) {
+            std::cerr << "Command " << cmd << " is not implemented for this protocol"
+                      << std::endl;
+            return 1;
+        }
+        for (int i = 0; i < 10; ++i) {
+            auto msg = wp_device.queryGeneratorCommand(true, false);
+            can_device->write(msg);
+            std::this_thread::sleep_for(20ms);
+        }
     }
     else if (cmd == "run") {
         uint16_t init_counter = 0;

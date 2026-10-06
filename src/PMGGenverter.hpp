@@ -40,7 +40,7 @@ namespace power_whisperpower {
         canbus::Message queryGeneratorCommandCanProtocol(bool start, bool stop);
 
     public:
-        PMGGenverter(PMGGenverterProtocol const& protocol = CAN_PROTOCOL);
+        PMGGenverter(PMGGenverterProtocol protocol = CAN_PROTOCOL);
 
         /** Process a single message from the bus */
         void process(canbus::Message const& msg);
