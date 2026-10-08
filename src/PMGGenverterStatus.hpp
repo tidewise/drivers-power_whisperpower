@@ -83,6 +83,7 @@ namespace power_whisperpower {
         // ID: 0x202 - Rate 50Hz
         // Words 0-3 respectively:
         uint16_t stepper;
+        // Engine temperature (v1.01)
         base::Temperature oil_temperature;
         uint16_t delta_dc_bus;
         uint16_t pwm_scale;
