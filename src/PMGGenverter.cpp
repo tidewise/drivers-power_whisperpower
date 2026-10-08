@@ -4,8 +4,9 @@
 using namespace power_whisperpower;
 using namespace power_whisperpower::protocol;
 
-PMGGenverter::PMGGenverter(PMGGenverterProtocol protocol)
+PMGGenverter::PMGGenverter(PMGGenverterProtocol protocol, uint8_t device_id)
     : m_protocol(protocol)
+    , m_device_id(device_id)
 {
 }
 
@@ -25,6 +26,10 @@ void PMGGenverter::process(canbus::Message const& msg)
 void PMGGenverter::parseWhisperConnect(canbus::Message const& msg)
 {
     if (getFunctionCode(msg) != FUNCTION_SEND) {
+        return;
+    }
+
+    if (getNodeID(msg) != (NODE_GROUP_GENERATOR + m_device_id)) {
         return;
     }
 
@@ -179,7 +184,7 @@ canbus::Message PMGGenverter::queryGeneratorCommand(bool start, bool stop)
 
 canbus::Message PMGGenverter::queryGeneratorCommandWhisperConnect(bool start, bool stop)
 {
-    uint8_t node_id = NODE_GROUP_GENERATOR;
+    uint8_t node_id = NODE_GROUP_GENERATOR + m_device_id;
 
     if (start && !stop) {
         return makeWriteMessage(node_id, 0x5100, 0, {0, 0, 0, 1});

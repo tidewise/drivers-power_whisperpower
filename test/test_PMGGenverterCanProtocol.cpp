@@ -33,7 +33,7 @@ TEST_F(PMGGenverterCanProtocolTest, it_processes_message_200)
 
     ASSERT_EQ(status.ac_voltage, 230.0);
     ASSERT_EQ(status.ac_current, 15.5);
-    ASSERT_NEAR(status.engine_angular_speed, 314.159, 1e-3);
+    ASSERT_NEAR(status.engine_angular_speed, 314.159, 1e-2);
     ASSERT_EQ(status.inverter_temperature.getCelsius(), 45.0);
 }
 

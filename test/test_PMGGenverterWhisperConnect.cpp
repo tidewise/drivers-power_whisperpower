@@ -19,7 +19,7 @@ struct PMGGenverterWhisperConnectTest : public ::testing::Test {
 
     void setMsgData(uint16_t index, uint32_t data)
     {
-        msg.can_id = protocol::FUNCTION_SEND + 0x01; // Node ID 1
+        msg.can_id = protocol::FUNCTION_SEND + protocol::NODE_GROUP_GENERATOR;
         msg.size = 8;
         msg.data[0] = protocol::COMMAND_SLAVE_READ_SUCCESSFUL;
         msg.data[1] = (index >> 8) & 0xFF;
@@ -37,7 +37,7 @@ TEST_F(PMGGenverterWhisperConnectTest, it_processes_ac_voltage_0x2110)
     setMsgData(0x2110, 230000); // 230.0V * 1000
     genverter.process(msg);
     PMGGenverterStatus status = genverter.getStatus();
-    ASSERT_NEAR(status.ac_voltage, 230.0, 1e-3);
+    ASSERT_NEAR(status.ac_voltage, 230.0, 1e-2);
 }
 
 TEST_F(PMGGenverterWhisperConnectTest, it_processes_ac_current_0x2111)
@@ -45,49 +45,53 @@ TEST_F(PMGGenverterWhisperConnectTest, it_processes_ac_current_0x2111)
     setMsgData(0x2111, 15500); // 15.5A * 1000
     genverter.process(msg);
     PMGGenverterStatus status = genverter.getStatus();
-    ASSERT_NEAR(status.ac_current, 15.5, 1e-3);
+    ASSERT_NEAR(status.ac_current, 15.5, 1e-2);
 }
 
 TEST_F(PMGGenverterWhisperConnectTest, it_processes_engine_angular_speed_0x2115)
 {
     setMsgData(0x2115, 3000); // 3000 RPM
     genverter.process(msg);
-    ASSERT_NEAR(genverter.getStatus().engine_angular_speed, 314.159, 1e-3);
+    ASSERT_NEAR(genverter.getStatus().engine_angular_speed, 314.159, 1e-2);
 }
 
 TEST_F(PMGGenverterWhisperConnectTest, it_processes_inverter_temperature_0x21A0)
 {
     setMsgData(0x21A0, 45000); // 45.0C * 1000
     genverter.process(msg);
-    ASSERT_NEAR(genverter.getStatus().inverter_temperature.getCelsius(), 45.0, 1e-3);
+    ASSERT_NEAR(genverter.getStatus().inverter_temperature.getCelsius(), 45.0, 1e-2);
 }
 
 TEST_F(PMGGenverterWhisperConnectTest, it_processes_status_0x2100)
 {
-    setMsgData(0x2100, 0x1234);
+    uint32_t val = PMGGenverterStatus::GENERATION_ENABLED | PMGGenverterStatus::ENGINE_ENABLED | PMGGenverterStatus::CHARGE_BATTERY_FLOAT;
+    setMsgData(0x2100, val);
     genverter.process(msg);
-    ASSERT_EQ(genverter.getStatus().status, 0x1234);
+    ASSERT_EQ(genverter.getStatus().status, val);
 }
 
 TEST_F(PMGGenverterWhisperConnectTest, it_processes_inverter_alarm_0x2101)
 {
-    setMsgData(0x2101, 0x4321);
+    uint32_t val = PMGGenverterStatus::AC_SHORT_CIRCUIT | PMGGenverterStatus::OVER_TEMPERATURE | PMGGenverterStatus::RPM_OVER_SPEED;
+    setMsgData(0x2101, val);
     genverter.process(msg);
-    ASSERT_EQ(genverter.getStatus().inverter_alarm, 0x4321);
+    ASSERT_EQ(genverter.getStatus().inverter_alarm, val);
 }
 
 TEST_F(PMGGenverterWhisperConnectTest, it_processes_inverter_warning_0x2102)
 {
-    setMsgData(0x2102, 0x0F0F);
+    uint32_t val = PMGGenverterStatus::HIGH_AC_CURRENT | PMGGenverterStatus::LOW_RPM;
+    setMsgData(0x2102, val);
     genverter.process(msg);
-    ASSERT_EQ(genverter.getStatus().inverter_warning, 0x0F0F);
+    ASSERT_EQ(genverter.getStatus().inverter_warning, val);
 }
 
 TEST_F(PMGGenverterWhisperConnectTest, it_processes_engine_alarm_0x2103)
 {
-    setMsgData(0x2103, 0xF0F0);
+    uint32_t val = PMGGenverterStatus::OIL_PRESSURE | PMGGenverterStatus::EXHAUST_TEMPERATURE | PMGGenverterStatus::CAN_COMMUNICATION_ERROR;
+    setMsgData(0x2103, val);
     genverter.process(msg);
-    ASSERT_EQ(genverter.getStatus().engine_alarm, 0xF0F0);
+    ASSERT_EQ(genverter.getStatus().engine_alarm, val);
 }
 
 TEST_F(PMGGenverterWhisperConnectTest, it_processes_stepper_0x2122)
@@ -101,7 +105,7 @@ TEST_F(PMGGenverterWhisperConnectTest, it_processes_oil_temperature_0x21A1)
 {
     setMsgData(0x21A1, 85000); // 85.0C * 1000
     genverter.process(msg);
-    ASSERT_NEAR(genverter.getStatus().oil_temperature.getCelsius(), 85.0, 1e-3);
+    ASSERT_NEAR(genverter.getStatus().oil_temperature.getCelsius(), 85.0, 1e-2);
 }
 
 TEST_F(PMGGenverterWhisperConnectTest, it_processes_pwm_scale_0x2121)

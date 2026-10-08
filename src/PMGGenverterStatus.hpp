@@ -35,7 +35,7 @@ namespace power_whisperpower {
         };
 
         /** @meta bitfield /power_whisperpower/PMGGenverterStatus/Status */
-        uint16_t status = 0;
+        uint32_t status = 0;
 
         // Word 1:
         enum InverterAlarm {
@@ -51,7 +51,7 @@ namespace power_whisperpower {
         };
 
         /** @meta bitfield /power_whisperpower/PMGGenverterStatus/InverterAlarm */
-        uint16_t inverter_alarm = 0;
+        uint32_t inverter_alarm = 0;
 
         // Word 2:
         enum InverterWarning {
@@ -61,7 +61,7 @@ namespace power_whisperpower {
         };
 
         /** @meta bitfield /power_whisperpower/PMGGenverterStatus/InverterWarning */
-        uint16_t inverter_warning = 0;
+        uint32_t inverter_warning = 0;
 
         // Word 3:
         enum EngineAlarm {
@@ -78,7 +78,7 @@ namespace power_whisperpower {
         };
 
         /** @meta bitfield /power_whisperpower/PMGGenverterStatus/EngineAlarm */
-        uint16_t engine_alarm = 0;
+        uint32_t engine_alarm = 0;
 
         // ID: 0x202 - Rate 50Hz
         // Words 0-3 respectively:
