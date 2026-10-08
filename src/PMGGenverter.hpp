@@ -33,6 +33,7 @@ namespace power_whisperpower {
         bool m_has_full_update = false;
         uint8_t m_run_ramp = 0;
         PMGGenverterProtocol m_protocol;
+        uint8_t m_device_id = 0;
 
         void parseWhisperConnect(canbus::Message const& msg);
         void parseCanProtocol(canbus::Message const& msg);
@@ -40,7 +41,7 @@ namespace power_whisperpower {
         canbus::Message queryGeneratorCommandCanProtocol(bool start, bool stop);
 
     public:
-        PMGGenverter(PMGGenverterProtocol protocol = CAN_PROTOCOL);
+        PMGGenverter(PMGGenverterProtocol protocol = CAN_PROTOCOL, uint8_t device_id = 0);
 
         /** Process a single message from the bus */
         void process(canbus::Message const& msg);
